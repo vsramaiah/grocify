@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 680" width="680" height="680" role="img">
+  <title>Grocify</title>
+  <desc>Grocify app icon — shopping cart with rupee symbol</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a7a30"/>
+      <stop offset="60%" stop-color="#5e7a2e"/>
+      <stop offset="100%" stop-color="#c98c28"/>
+    </linearGradient>
+    <linearGradient id="carttray" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#edf7dc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="60" y="60" width="560" height="560" rx="128" fill="url(#bg)"/>
+  <rect x="60" y="60" width="560" height="560" rx="128" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="6"/>
+  <circle cx="580" cy="130" r="110" fill="rgba(255,248,210,0.07)"/>
+  <circle cx="120" cy="590" r="90" fill="rgba(255,255,255,0.05)"/>
+
+  <!-- Cart handle arc -->
+  <path d="M 252 290 Q 252 198 340 198 Q 428 198 428 290" fill="none" stroke="white" stroke-width="24" stroke-linecap="round" opacity="0.88"/>
+
+  <!-- Cart rim bar -->
+  <rect x="182" y="278" width="316" height="34" rx="17" fill="white" opacity="0.92"/>
+
+  <!-- Cart tray -->
+  <rect x="200" y="302" width="280" height="172" rx="26" fill="url(#carttray)" opacity="0.97"/>
+
+  <!-- ₹ symbol inside cart -->
+  <text x="340" y="452" text-anchor="middle" font-size="148" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#4a7a30" opacity="0.90">₹</text>
+
+  <!-- Cart wheels -->
+  <circle cx="264" cy="492" r="30" fill="white" opacity="0.96"/>
+  <circle cx="264" cy="492" r="15" fill="#4a7a30" opacity="0.75"/>
+  <circle cx="416" cy="492" r="30" fill="white" opacity="0.96"/>
+  <circle cx="416" cy="492" r="15" fill="#4a7a30" opacity="0.75"/>
+</svg>

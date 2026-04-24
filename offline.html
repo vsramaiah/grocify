@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#f4f2ec"/>
+<title>Grocify Offline</title>
+<style>
+:root{
+  --bg:#f7f1e7;
+  --panel:#fffaf2;
+  --line:#eadfcf;
+  --text:#263126;
+  --muted:#788276;
+  --accent:#476a2e;
+  --accent-soft:#e6efd9;
+  --shadow:0 18px 40px rgba(79,59,30,.10);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  font-family:"Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top right, rgba(215,154,43,.14), transparent 28%),
+    radial-gradient(circle at top left, rgba(71,106,46,.10), transparent 24%),
+    var(--bg);
+}
+.card{
+  width:min(100%,420px);
+  background:rgba(255,250,242,.96);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:28px 24px;
+  box-shadow:var(--shadow);
+}
+.badge{
+  width:64px;
+  height:64px;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#557a32 0%,#d28c2f 100%);
+  color:#fff;
+  font-size:30px;
+  margin-bottom:18px;
+}
+h1{
+  margin:0 0 10px;
+  font-size:28px;
+  line-height:1.05;
+}
+p{
+  margin:0 0 14px;
+  color:var(--muted);
+  line-height:1.6;
+}
+a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:0 18px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#476a2e 0%,#5d7b30 100%);
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+}
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge">G</div>
+    <h1>You're offline</h1>
+    <p>Grocify is still installed, but this page needs a connection to fully load. Reconnect and open the app again to sync your latest grocery data.</p>
+    <a href="./grocify-gsheetv3.0-Codex.html">Try Again</a>
+  </main>
+</body>
+</html>

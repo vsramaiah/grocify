@@ -1,0 +1,48 @@
+{
+  "id": "/grocify-gsheetv3.0-Codex.html",
+  "name": "Grocify Smart Grocery and Budget Tracker",
+  "short_name": "Grocify",
+  "description": "Track grocery spending, shopping lists, and category budgets with Google Sheet sync.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/grocify-gsheetv3.0-Codex.html?v=3",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#4a7a30",
+  "theme_color": "#4a7a30",
+  "categories": ["finance", "shopping", "productivity"],
+  "screenshots": [],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

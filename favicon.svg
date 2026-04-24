@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img">
+  <title>Grocify</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a7a30"/>
+      <stop offset="100%" stop-color="#c98c28"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="32" height="32" rx="7" fill="url(#bg)"/>
+
+  <!-- Cart handle -->
+  <path d="M 9 14 Q 9 8 16 8 Q 23 8 23 14" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Cart rim -->
+  <rect x="6" y="13" width="20" height="3" rx="1.5" fill="white" opacity="0.92"/>
+
+  <!-- Cart tray -->
+  <rect x="7.5" y="15.5" width="17" height="10.5" rx="2.5" fill="white" opacity="0.95"/>
+
+  <!-- ₹ inside tray -->
+  <text x="16" y="24" text-anchor="middle" font-size="9" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#4a7a30" opacity="0.90">₹</text>
+
+  <!-- Wheels -->
+  <circle cx="11" cy="28" r="2.4" fill="white" opacity="0.95"/>
+  <circle cx="21" cy="28" r="2.4" fill="white" opacity="0.95"/>
+</svg>
