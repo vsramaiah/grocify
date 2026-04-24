@@ -86,18 +86,3 @@ If the installed app still shows the old version:
 3. If needed, uninstall and install the app again.
 
 This is needed because PWAs can cache files through the service worker.
-
-## Current More Tab Calendar Flow
-
-In the `More` tab:
-
-1. Tap `Calendar`.
-2. The month calendar opens.
-3. Tap any date.
-4. Only that day’s transactions appear below the calendar.
-
-## Next Improvements
-
-- Export real PNG app icons for broader device compatibility.
-- Host the app online for easier mobile install.
-- Improve the More tab calendar card visuals.
