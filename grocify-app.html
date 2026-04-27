@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#f4f2ec"/>
+<meta name="description" content="Grocify helps you track grocery spending, shopping lists, and budgets with Google Sheet sync."/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Grocify"/>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Grocify</title>
+<style>
+:root{
+  --bg:#f7f1e7;
+  --panel:#fffaf2;
+  --panel-soft:#f4ede1;
+  --line:#e8dcc9;
+  --text:#263126;
+  --muted:#7f8775;
+  --accent:#476a2e;
+  --accent-soft:#e5efd7;
+  --warn:#bf5a36;
+  --warn-soft:#f9e5dc;
+  --gold:#d79a2b;
+  --shadow:0 16px 34px rgba(79,59,30,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{
+  font-family:"Segoe UI",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(215,154,43,.14), transparent 28%),
+    radial-gradient(circle at top left, rgba(71,106,46,.10), transparent 24%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+#wrap{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  padding:20px 16px 110px;
+}
+#setup{
+  position:fixed;
+  inset:0;
+  z-index:999;
+  background:linear-gradient(180deg,#fffdf8 0%,#f4f2ec 100%);
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:28px 20px 60px;
+}
+#setup h2{font-size:26px;font-weight:800;margin-bottom:6px;color:var(--text)}
+#setup>p{font-size:13px;color:#66747d;text-align:center;line-height:1.7;margin-bottom:18px}
+.sbox,.card,.hero,.quick-card,.stat-card,.recent-card,.budget-ring-card,.tool-card,.settings-card,.more-banner{
+  background:rgba(255,250,242,.95);
+  border:1px solid #f2e8d8;
+  box-shadow:var(--shadow);
+}
+.sbox{
+  width:100%;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:12px;
+}
+.sbox label{font-size:10px;font-weight:700;color:#88959f;text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:7px}
+.sbox input{
+  width:100%;
+  border:1px solid #dfe6df;
+  border-radius:12px;
+  padding:12px 13px;
+  font-size:15px;
+  font-family:inherit;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+}
+.sbox input:focus{border-color:var(--accent)}
+.snote{font-size:11px;color:#99a4ac;margin-top:6px;line-height:1.6}
+.scriptbox{
+  width:100%;
+  background:#182127;
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 20px 40px rgba(14,18,24,.2);
+}
+.scriptbox pre{
+  font-family:Consolas,monospace;
+  font-size:10.5px;
+  color:#b6f6b2;
+  white-space:pre-wrap;
+  line-height:1.7;
+  margin-bottom:10px;
+  max-height:240px;
+  overflow-y:auto;
+}
+.steps{
+  width:100%;
+  background:#fffdf8;
+  border:1px solid #ece8de;
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:16px;
+  font-size:12px;
+  color:#5f6972;
+  line-height:2;
+  box-shadow:var(--shadow);
+}
+.snum{
+  display:inline-flex;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--accent);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  align-items:center;
+  justify-content:center;
+  margin-right:6px;
+  flex-shrink:0;
+  vertical-align:middle;
+}
+.topbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:18px}
+.actions{display:flex;gap:10px}
+.icon-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid #efe4d1;
+  background:rgba(255,250,242,.96);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);cursor:pointer;font-size:18px
+}
+.icon-btn.gold{background:#fff0d7}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#7cc987;
+  flex-shrink:0;
+}
+.dot.syncing{background:#f1be43;animation:blink .8s infinite}
+.dot.off{background:#e97e7e}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{
+  border-radius:28px;
+  padding:20px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+.promo-banner{
+  background:linear-gradient(135deg,#557a32 0%,#7b8f33 48%,#d28c2f 100%);
+  color:#fff;
+  border-radius:30px;
+  padding:20px 18px 24px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 18px 34px rgba(37,150,93,.22);
+}
+.promo-banner::before{
+  content:"";
+  position:absolute;
+  inset:auto -24px -36px auto;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:rgba(255,248,232,.10);
+}
+.promo-banner::after{
+  content:"";
+  position:absolute;
+  top:-32px;
+  right:-20px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:rgba(255,248,232,.08);
+}
+.promo-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:18px;
+  position:relative;
+  z-index:1;
+}
+.promo-badge{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  background:rgba(255,255,255,.14);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+  box-shadow:inset 0 0 0 1px rgba(255,248,232,.12);
+}
+.promo-kicker{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  opacity:.96;
+}
+.promo-title{
+  font-size:26px;
+  line-height:1.05;
+  font-weight:900;
+  letter-spacing:-1px;
+  max-width:280px;
+  position:relative;
+  z-index:1;
+}
+.promo-copy{
+  margin-top:10px;
+  max-width:260px;
+  font-size:13px;
+  line-height:1.55;
+  color:rgba(255,255,255,.84);
+  position:relative;
+  z-index:1;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  right:-30px;top:-30px;
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle, rgba(210,140,47,.18), transparent 70%);
+}
+.hero-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;position:relative;z-index:1}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.4px;color:#9ba5ad;text-transform:uppercase}
+.range-pick{
+  border:1px solid #e9dfcf;background:#fffaf2;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:#546146
+}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;position:relative;z-index:1}
+.hero-metric .label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.hero-metric .label.sp{color:#c74840}
+.hero-metric .label.in{color:var(--accent)}
+.hero-metric .value{font-size:20px;font-weight:900}
+.balance-box{
+  margin-top:16px;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.84);
+  border:1px solid #eef0eb;
+  display:flex;justify-content:space-between;align-items:center;
+  position:relative;z-index:1;
+}
+.balance-box span{font-size:13px;color:#6e7b84}
+.balance-box strong{font-size:16px}
+.seg{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  background:rgba(255,255,255,.75);
+  border-radius:16px;
+  padding:5px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.seg button{
+  border:none;background:transparent;border-radius:12px;padding:10px 6px;
+  font-size:12px;font-weight:700;color:#9ba5ad;cursor:pointer;font-family:inherit
+}
+.seg button.on{background:#fff;color:var(--text);box-shadow:0 8px 16px rgba(35,45,58,.08)}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px}
+.section-title h2{font-size:15px;font-weight:800}
+.section-title button,.txt-link{
+  border:none;background:#fffaf2;border-radius:999px;padding:9px 14px;
+  font-size:12px;font-weight:700;color:#556145;cursor:pointer;box-shadow:var(--shadow)
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat-card,.recent-card,.budget-ring-card,.tool-card,.settings-card,.more-banner,.card,.quick-card{
+  border-radius:24px;
+  padding:16px;
+  margin-bottom:12px;
+}
+.stat-card small{display:block;font-size:11px;color:#8b97a0;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;font-weight:800}
+.stat-card .big{font-size:28px;font-weight:900;margin-bottom:4px}
+.stat-card .note{font-size:12px;color:#7b8790}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.quick-card{display:flex;align-items:center;gap:12px;padding:18px}
+.qicon{
+  width:46px;height:46px;border-radius:18px;background:var(--accent-soft);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0
+}
+.quick-card h3{font-size:15px;font-weight:800;margin-bottom:3px}
+.quick-card p{font-size:12px;color:#79858e;line-height:1.4}
+.budget-ring-card svg{display:block;margin:4px auto 10px}
+.budget-caption{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding:0 6px 12px;border-bottom:1px solid #efebe2;margin-bottom:12px
+}
+.budget-caption span{display:block;font-size:12px;color:#8a969f}
+.budget-caption strong{display:block;font-size:19px;font-weight:900;margin-top:4px}
+.budget-warning{
+  font-size:13px;border-radius:16px;padding:12px 14px;background:#fbf0df;color:#8a6431
+}
+.budget-warning.over{background:var(--warn-soft);color:#b23d3d}
+.recent-card{padding:0;overflow:hidden}
+.recent-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 10px}
+.recent-list{padding:0 10px 10px}
+.tx{
+  display:flex;align-items:center;gap:12px;padding:12px 8px;border-radius:18px
+}
+.tx+.tx{border-top:1px solid #f2eee7}
+.tx-icon{
+  width:52px;height:52px;border-radius:20px;background:#eff7f0;
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0
+}
+.tx-icon.food{background:#fff1df}
+.tx-main{flex:1}
+.tx-main strong{display:block;font-size:15px;margin-bottom:3px}
+.tx-sub{font-size:12px;color:#909ca5}
+.tx-amt{text-align:right}
+.tx-amt strong{display:block;font-size:18px}
+.tx-amt span{font-size:12px;color:#9aa6af}
+.chip-row{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
+.chip-filter{
+  min-width:max-content;border:none;background:#fffaf2;border-radius:999px;padding:9px 14px;
+  font-size:12px;font-weight:700;color:#7d866f;box-shadow:var(--shadow);cursor:pointer
+}
+.chip-filter.on{background:var(--accent);color:#fff}
+.pie-shell{padding:8px 0}
+.pie-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pie-legend{flex:1;min-width:140px}
+.pie-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.pie-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.cat-list{display:grid;gap:10px}
+.cat-row{
+  display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
+  padding:10px 0;border-bottom:1px solid #f3efe7
+}
+.cat-row:last-child{border-bottom:none}
+.cat-icon{
+  width:38px;height:38px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;letter-spacing:.5px;background:#f6f4ef
+}
+.cat-meta strong{display:block;font-size:14px}
+.cat-meta span{font-size:12px;color:#97a2aa}
+.cat-val{text-align:right}
+.cat-val strong{display:block;font-size:15px}
+.cat-val span{font-size:11px;color:var(--accent)}
+.view{display:none}
+.view.on{display:block}
+.card{border-radius:24px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mc{
+  background:linear-gradient(180deg,#fff8ee 0%,#f2e8d8 100%);
+  border-radius:18px;padding:13px
+}
+.mc .l{font-size:10px;color:#8f9aa3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;font-weight:700}
+.mc .v{font-size:18px;font-weight:900}
+.mc .s{font-size:11px;color:#98a3aa;margin-top:3px}
+.f{margin-bottom:12px}
+.f label,.flbl{font-size:10px;color:#8c98a1;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.f input,.f select,.f textarea,input.fi,select.fi{
+  width:100%;border:1px solid #dfe6df;border-radius:14px;padding:11px 12px;font-size:14px;
+  font-family:inherit;background:#fff;color:var(--text);outline:none
+}
+.f input:focus,.f select:focus,input.fi:focus,select.fi:focus,.f textarea:focus{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.chip{
+  border:1px solid #e7dcc9;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;background:#fffaf2;cursor:pointer;color:#66735f
+}
+.chip.st.on,.chip.md.on,.chip.py.on,.chip.sub.on{background:var(--text);color:#fff;border-color:var(--text)}
+.gbtn,.obtn,.rbtn,.sbtn,.ebtn{
+  border:none;border-radius:14px;padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit
+}
+.gbtn{background:linear-gradient(135deg,#476a2e 0%,#5d7b30 100%);color:#fff}
+.obtn{background:#fffaf2;color:var(--text);border:1px solid #e7dcc9}
+.rbtn{background:#fff1eb;color:#b75034;border:1px solid #efc1b4}
+.sbtn{background:#f4ecdf;color:#556145;border:1px solid #e7dcc9}
+.ebtn{background:#eaf2ff;color:#2f66a5;border:1px solid #c7d8f3}
+.tag{display:inline-block;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:700}
+.pb{height:7px;background:#eadfcf;border-radius:999px;overflow:hidden;margin-top:6px}
+.pf{height:100%;border-radius:999px;transition:width .4s}
+.alert{background:#fff4d8;border:1px solid #f5d38f;border-radius:16px;padding:10px 12px;font-size:12px;color:#886321;margin-bottom:8px}
+.alert-red{background:#fff0f0;border-color:#efb0b0;color:#bf4343}
+.li{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fffaf2;border:1px solid #eee2d1;border-radius:18px;margin-bottom:8px;box-shadow:var(--shadow)
+}
+.li input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;cursor:pointer}
+.li .n{flex:1;font-size:13px}
+.li .n.done{text-decoration:line-through;color:#b4bcc2}
+.hi{
+  padding:14px;background:#fffaf2;border:1px solid #eee2d1;border-radius:20px;margin-bottom:10px;box-shadow:var(--shadow)
+}
+.hd{margin-top:10px;border-top:1px solid #f1ede6;padding-top:10px;display:none}
+.hd.on{display:block}
+.sdate{font-size:10px;font-weight:800;color:#97a3ac;text-transform:uppercase;letter-spacing:.6px;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.sdate::after{content:"";flex:1;height:1px;background:#e8e2d8}
+.acw{position:relative}
+.acl{
+  position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #dde5dd;border-radius:16px;z-index:300;max-height:160px;overflow-y:auto;margin-top:4px;box-shadow:var(--shadow)
+}
+.aci{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f4f1eb}
+.aci .sub{font-size:10px;color:#98a4ac;margin-top:2px}
+.aci:active{background:#f6f3ee}
+.tbar{
+  background:#f5f2eb;border-radius:20px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:14px
+}
+.tbar .amt{font-size:24px;font-weight:900;color:var(--text)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(18,25,32,.55);z-index:998;align-items:flex-end;justify-content:center}
+.overlay.on{display:flex}
+.sheet{
+  background:#fff;border-radius:28px 28px 0 0;padding:22px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto
+}
+.sheet h3{font-size:18px;font-weight:800;margin-bottom:14px}
+.mlbl{font-size:10px;color:#8e99a2;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.mval{font-size:13px;padding:11px 13px;background:#f5f2eb;border-radius:14px;margin-bottom:12px;word-break:break-all;color:#4b5961}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stitle{font-size:13px;font-weight:800;color:var(--text);margin-bottom:10px}
+.empty{text-align:center;padding:2rem 1rem;color:#9ca8b0;font-size:13px}
+.uphint{font-size:10px;color:var(--accent);font-weight:700;margin-top:3px;min-height:14px}
+.autofill-hint{font-size:10px;color:#b67116;margin-top:3px}
+#toast{
+  position:fixed;top:72px;left:50%;transform:translateX(-50%);background:#1c262d;color:#fff;padding:10px 17px;border-radius:999px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;max-width:90%;text-align:center
+}
+#toast.on{opacity:1}
+.subtabs{
+  display:flex;gap:6px;margin-bottom:13px;background:#f1eee7;padding:5px;border-radius:16px
+}
+.stab{
+  flex:1;padding:10px 12px;font-size:12px;font-weight:800;color:#8e99a2;cursor:pointer;border-radius:12px;text-align:center
+}
+.stab.on{color:var(--text);background:#fff;box-shadow:0 8px 16px rgba(35,45,58,.08)}
+.cbudget-row{margin-bottom:12px}
+.cbudget-row .row{font-size:12px;margin-bottom:3px}
+.nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;padding:14px 18px 18px;z-index:120
+}
+.nav-shell{
+  background:rgba(255,250,242,.96);
+  border:1px solid #efe3cf;
+  border-radius:34px;
+  box-shadow:0 -6px 30px rgba(28,38,45,.08);
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding:14px 10px 12px;
+}
+.nav button{
+  flex:1;padding:4px 2px 0;font-size:10px;font-weight:700;color:#9aa5ad;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;text-transform:none
+}
+.nav button svg{width:21px;height:21px;stroke:#98a08d}
+.nav button.on{color:var(--text)}
+.nav button.on svg{stroke:var(--text)}
+.nav .add-btn{
+  flex:1;
+  padding:4px 2px 0;
+  font-size:10px;
+  font-weight:700;
+  color:#9aa5ad;
+  background:none;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  text-transform:none;
+}
+.add-icon{
+  width:21px;
+  height:21px;
+  position:relative;
+}
+.add-icon::before,.add-icon::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:#98a08d;
+  border-radius:999px;
+  transform:translate(-50%,-50%);
+}
+.add-icon::before{
+  width:15px;
+  height:2.4px;
+}
+.add-icon::after{
+  width:2.4px;
+  height:15px;
+}
+.nav .add-btn.on{color:var(--text)}
+.nav .add-btn.on .add-icon::before,.nav .add-btn.on .add-icon::after{background:var(--text)}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tool-card{display:flex;align-items:center;gap:12px;padding:18px}
+.tool-icon{
+  width:42px;height:42px;border-radius:16px;background:#f5f2eb;display:flex;align-items:center;justify-content:center;font-size:22px
+}
+.tool-card h3{font-size:15px;font-weight:800}
+.tool-card p{font-size:12px;color:#8c98a1;margin-top:3px}
+.settings-card{display:flex;align-items:center;justify-content:space-between}
+.settings-card strong{display:block;font-size:17px}
+.settings-card span{font-size:12px;color:#8b97a0}
+.more-banner{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:linear-gradient(135deg,#fff6e8 0%,#fffdf8 100%);
+  border:1px solid #eedbb5;
+}
+.more-banner .left{display:flex;gap:14px;align-items:center}
+.banner-icon{
+  width:52px;height:52px;border-radius:18px;background:#fff0c9;display:flex;align-items:center;justify-content:center;font-size:28px
+}
+.small-note{font-size:11px;color:#97a3ac}
+.calendar-shell{
+  background:rgba(255,250,242,.95);
+  border:1px solid #f2e8d8;
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  padding:18px 14px 16px;
+}
+.calendar-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 14px;
+  background:#fffaf2;
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  margin-bottom:16px;
+}
+.calendar-head button{
+  border:none;
+  background:none;
+  font-size:30px;
+  line-height:1;
+  color:#3f4d55;
+  cursor:pointer;
+  padding:0 2px;
+}
+.calendar-head strong{
+  display:block;
+  font-size:18px;
+  font-weight:900;
+  text-align:center;
+}
+.calendar-head span{
+  display:block;
+  font-size:11px;
+  color:#98a4ac;
+  text-align:center;
+  margin-top:4px;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+}
+.calendar-weekdays,.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+}
+.calendar-weekdays div{
+  text-align:center;
+  font-size:11px;
+  color:#697780;
+  padding:8px 0 10px;
+  font-weight:700;
+}
+.calendar-cell{
+  min-height:86px;
+  border:1px solid #efe4d3;
+  background:#fffaf2;
+  padding:8px 6px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  cursor:pointer;
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.calendar-cell.empty{background:transparent}
+.calendar-day{
+  font-size:14px;
+  font-weight:800;
+  color:#26343d;
+}
+.calendar-amt{
+  align-self:flex-start;
+  border-radius:12px;
+  padding:5px 8px;
+  font-size:11px;
+  font-weight:800;
+  color:#38454d;
+  background:#f7ece4;
+}
+.calendar-amt.mid{background:#f3dece}
+.calendar-amt.high{background:#e7b392}
+.calendar-amt.top{background:#87aa61;color:#fff}
+.month-nav{
+  background:#fff;
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.month-nav button{
+  border:none;
+  background:none;
+  font-size:30px;
+  line-height:1;
+  color:#44525a;
+  cursor:pointer;
+  padding:0 2px;
+}
+.month-nav-main{
+  text-align:center;
+  flex:1;
+}
+.month-nav-main strong{
+  display:block;
+  font-size:18px;
+  font-weight:900;
+}
+.month-nav-main span{
+  display:block;
+  margin-top:4px;
+  font-size:11px;
+  color:#97a3ac;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}
+.calendar-panel{display:none;margin-top:12px}
+.calendar-panel.on{display:block}
+.calendar-cell:not(.empty):active{transform:scale(.98)}
+.calendar-cell.sel{
+  border-color:#7b9e57;
+  box-shadow:inset 0 0 0 2px rgba(123,158,87,.22);
+  background:#fff7ed;
+}
+.calendar-day-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:14px;
+  margin-bottom:10px;
+  padding:14px 16px;
+  background:#fff;
+  border-radius:20px;
+  box-shadow:var(--shadow);
+}
+.calendar-day-meta strong{display:block;font-size:16px;font-weight:900}
+.calendar-day-meta span{display:block;font-size:11px;color:#97a3ac;margin-top:4px}
+.calendar-day-list{display:grid;gap:10px}
+.calendar-empty{
+  text-align:center;
+  padding:22px 14px;
+  font-size:12px;
+  color:#97a3ac;
+}
+.home-summary{
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:var(--shadow);
+  border-radius:30px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.summary-block+.summary-block{
+  border-top:1px solid #f1ede6;
+  margin-top:16px;
+  padding-top:16px;
+}
+.summary-mini{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.summary-mini .stat-card{
+  margin-bottom:0;
+  box-shadow:none;
+  border:1px solid #f1ede6;
+  background:linear-gradient(180deg,#fbfaf6 0%,#f5f2eb 100%);
+}
+@media (max-width:360px){
+  .hero-grid,.grid-2,.quick-grid,.tool-grid,.mgrid{grid-template-columns:1fr}
+  .balance-box{flex-direction:column;align-items:flex-start;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <div style="font-size:52px;margin-bottom:12px">🛒</div>
+  <h2>Grocify</h2>
+  <p>Syncs to your <strong>Google Sheet</strong> with a softer finance-style dashboard.<br/>Set it up once and keep using it across devices.</p>
+
+  <div class="steps">
+    <div style="font-size:12px;font-weight:800;color:var(--accent);margin-bottom:8px">Setup Steps</div>
+    <div><span class="snum">1</span>Go to <strong>sheets.new</strong> and create a blank Google Sheet</div>
+    <div><span class="snum">2</span>Open <strong>Extensions → Apps Script</strong></div>
+    <div><span class="snum">3</span>Delete everything, paste the script below, then save</div>
+    <div><span class="snum">4</span>Deploy it as a <strong>Web app</strong></div>
+    <div><span class="snum">5</span>Set access to <strong>Anyone</strong>, deploy, and authorize</div>
+    <div><span class="snum">6</span>Copy the web app URL and paste it below</div>
+    <div><span class="snum">7</span>Use the same sync code on all devices if you want shared data</div>
+  </div>
+
+  <div class="scriptbox">
+    <div style="font-size:10px;color:#8db4ff;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Apps Script</div>
+    <pre id="scriptTxt">function doGet(e) {
+  var key = (e.parameter && e.parameter.key) ? e.parameter.key : 'default';
+  migrateLegacyIfNeeded_(key);
+  return ContentService
+    .createTextOutput(JSON.stringify(readState_(key)))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var inc = JSON.parse(e.postData.contents || '{}');
+  var key = inc.key || 'default';
+  migrateLegacyIfNeeded_(key);
+
+  var state = normalizeState_(inc);
+  state.version = Date.now();
+  writeState_(key, state);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ok:true, version:state.version}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function normalizeState_(data) {
+  var deleted = unique_((data.deletedIds || []).filter(Boolean));
+  var purchases = (data.purchases || []).map(function(p) {
+    return {
+      id: p.id || Utilities.getUuid(),
+      datetime: p.datetime || '',
+      store: p.store || '',
+      payMode: p.payMode || '',
+      total: Number(p.total || 0),
+      notes: p.notes || '',
+      items: (p.items || []).map(function(it) {
+        return {
+          id: it.id || Utilities.getUuid(),
+          name: it.name || '',
+          category: it.category || 'Other',
+          qty: String(it.qty || '1'),
+          unit: it.unit || 'pcs',
+          price: String(it.price || '')
+        };
+      })
+    };
+  }).filter(function(p) {
+    return p.id && deleted.indexOf(p.id) === -1;
+  });
+
+  return {
+    purchases: purchases,
+    list: (data.list || []).map(function(it) {
+      return {
+        id: it.id || Utilities.getUuid(),
+        name: it.name || '',
+        qty: String(it.qty || '1'),
+        unit: it.unit || 'pcs',
+        est: String(it.est || ''),
+        recur: !!it.recur,
+        checked: !!it.checked,
+        category: it.category || 'Other'
+      };
+    }),
+    budget: Number(data.budget || 0),
+    catBudgets: data.catBudgets || {},
+    deletedIds: deleted,
+    version: Number(data.version || 0)
+  };
+}
+
+function readState_(key) {
+  var sheets = getSheets_(key);
+  var purchaseRows = readRows_(sheets.purchases);
+  var itemRows = readRows_(sheets.items);
+  var listRows = readRows_(sheets.list);
+  var settingsRows = readRows_(sheets.settings);
+  var deletedRows = readRows_(sheets.deleted);
+  var metaRows = readRows_(sheets.meta);
+
+  var byId = {};
+  purchaseRows.forEach(function(r) {
+    byId[r.id] = {
+      id: r.id,
+      datetime: r.datetime || '',
+      store: r.store || '',
+      payMode: r.payMode || '',
+      total: Number(r.total || 0),
+      notes: r.notes || '',
+      items: []
+    };
+  });
+
+  itemRows.forEach(function(r) {
+    if (!byId[r.purchaseId]) return;
+    byId[r.purchaseId].items.push({
+      id: r.id,
+      name: r.name || '',
+      category: r.category || 'Other',
+      qty: String(r.qty || '1'),
+      unit: r.unit || 'pcs',
+      price: String(r.price || '')
+    });
+  });
+
+  var catBudgets = {};
+  var budget = 0;
+  settingsRows.forEach(function(r) {
+    if (r.type === 'budget') budget = Number(r.value || 0);
+    if (r.type === 'catBudget' && r.name) {
+      catBudgets[r.name] = Number(r.value || 0);
+    }
+  });
+
+  var version = 0;
+  metaRows.forEach(function(r) {
+    if (r.key === 'version') version = Number(r.value || 0);
+  });
+
+  return {
+    purchases: Object.keys(byId).map(function(id) { return byId[id]; }),
+    list: listRows.map(function(r) {
+      return {
+        id: r.id,
+        name: r.name || '',
+        qty: String(r.qty || '1'),
+        unit: r.unit || 'pcs',
+        est: String(r.est || ''),
+        recur: toBool_(r.recur),
+        checked: toBool_(r.checked),
+        category: r.category || 'Other'
+      };
+    }),
+    budget: budget,
+    catBudgets: catBudgets,
+    deletedIds: unique_(deletedRows.map(function(r) { return r.id; }).filter(Boolean)),
+    version: version
+  };
+}
+
+function writeState_(key, state) {
+  var sheets = getSheets_(key);
+
+  writeRows_(sheets.purchases,
+    ['id','datetime','store','payMode','total','notes'],
+    state.purchases.map(function(p) {
+      return [p.id, p.datetime, p.store, p.payMode, Number(p.total || 0), p.notes || ''];
+    })
+  );
+
+  writeRows_(sheets.items,
+    ['id','purchaseId','name','category','qty','unit','price'],
+    flatten_(state.purchases.map(function(p) {
+      return (p.items || []).map(function(it) {
+        return [it.id, p.id, it.name || '', it.category || 'Other', String(it.qty || '1'), it.unit || 'pcs', String(it.price || '')];
+      });
+    }))
+  );
+
+  writeRows_(sheets.list,
+    ['id','name','qty','unit','est','recur','checked','category'],
+    state.list.map(function(it) {
+      return [it.id, it.name || '', String(it.qty || '1'), it.unit || 'pcs', String(it.est || ''), !!it.recur, !!it.checked, it.category || 'Other'];
+    })
+  );
+
+  var settingsRows = [['budget','',Number(state.budget || 0)]];
+  Object.keys(state.catBudgets || {}).forEach(function(name) {
+    settingsRows.push(['catBudget', name, Number(state.catBudgets[name] || 0)]);
+  });
+  writeRows_(sheets.settings, ['type','name','value'], settingsRows);
+
+  writeRows_(sheets.deleted, ['id'], unique_(state.deletedIds || []).map(function(id) { return [id]; }));
+  writeRows_(sheets.meta, ['key','value'], [['version', Number(state.version || 0)]]);
+}
+
+function migrateLegacyIfNeeded_(key) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = getSheets_(key);
+  if (sheets.meta.getLastRow() > 1 || sheets.purchases.getLastRow() > 1) return;
+
+  var legacyName = legacySheetName_(key);
+  var legacy = ss.getSheetByName(legacyName);
+  if (!legacy) return;
+
+  var raw = legacy.getRange(1,1).getValue();
+  if (!raw) return;
+
+  try {
+    var parsed = JSON.parse(raw);
+    var state = normalizeState_(parsed);
+    state.version = Number(parsed.version || Date.now());
+    writeState_(key, state);
+  } catch (err) {
+    // Fix #13: log migration errors instead of silently swallowing them
+    console.error('Grocify: legacy migration failed for key ' + key, err);
+  }
+}
+
+function getSheets_(key) {
+  var base = baseName_(key);
+  return {
+    purchases: ensureSheet_(base + '_Purchases', ['id','datetime','store','payMode','total','notes']),
+    items: ensureSheet_(base + '_Items', ['id','purchaseId','name','category','qty','unit','price']),
+    list: ensureSheet_(base + '_List', ['id','name','qty','unit','est','recur','checked','category']),
+    settings: ensureSheet_(base + '_Settings', ['type','name','value']),
+    deleted: ensureSheet_(base + '_Deleted', ['id']),
+    meta: ensureSheet_(base + '_Meta', ['key','value'])
+  };
+}
+
+function ensureSheet_(name, headers) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(name) || ss.insertSheet(name);
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1,1,1,headers.length).setValues([headers]);
+  } else {
+    var existing = sheet.getRange(1,1,1,headers.length).getValues()[0];
+    if (existing.join('|') !== headers.join('|')) {
+      sheet.clearContents();
+      sheet.getRange(1,1,1,headers.length).setValues([headers]);
+    }
+  }
+  return sheet;
+}
+
+function readRows_(sheet) {
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastRow < 2 || lastCol === 0) return [];
+  var headers = sheet.getRange(1,1,1,lastCol).getValues()[0];
+  var values = sheet.getRange(2,1,lastRow-1,lastCol).getValues();
+  return values.filter(function(row) {
+    return row.join('') !== '';
+  }).map(function(row) {
+    var out = {};
+    headers.forEach(function(h, i) { out[h] = row[i]; });
+    return out;
+  });
+}
+
+function writeRows_(sheet, headers, rows) {
+  sheet.clearContents();
+  sheet.getRange(1,1,1,headers.length).setValues([headers]);
+  if (rows.length) {
+    sheet.getRange(2,1,rows.length,headers.length).setValues(rows);
+  }
+}
+
+function baseName_(key) {
+  return ('GT_' + String(key).replace(/[^a-zA-Z0-9_-]/g,'_')).slice(0,30);
+}
+
+function legacySheetName_(key) {
+  return ('GT_' + String(key).replace(/[^a-zA-Z0-9_-]/g,'_')).slice(0,28);
+}
+
+function flatten_(parts) {
+  return [].concat.apply([], parts);
+}
+
+function unique_(arr) {
+  var out = [];
+  var seen = {};
+  arr.forEach(function(v) {
+    if (!v || seen[v]) return;
+    seen[v] = true;
+    out.push(v);
+  });
+  return out;
+}
+
+function toBool_(value) {
+  return value === true || value === 'TRUE' || value === 'true' || value === 1;
+}</pre>
+    <button onclick="copyScript()" style="background:#26313c;color:#f5f9ff;border:1px solid #3e4c58;border-radius:12px;padding:10px 14px;font-size:12px;cursor:pointer;font-family:inherit;width:100%">Copy Script</button>
+  </div>
+
+  <div class="sbox">
+    <label>Apps Script Web App URL</label>
+    <input type="url" id="sUrl" placeholder="https://script.google.com/macros/s/..." spellcheck="false" autocomplete="off"/>
+    <div class="snote">Paste the deployed Apps Script URL here.</div>
+  </div>
+  <div class="sbox">
+    <label>Sync Code</label>
+    <input type="text" id="sCode" placeholder="e.g. family-home" autocapitalize="none" spellcheck="false"/>
+    <div class="snote">Leave blank for personal use. Use the same code everywhere to share the same grocery data.</div>
+  </div>
+  <button class="gbtn" style="width:100%;margin-bottom:12px;padding:14px" onclick="startApp()">Start Tracking</button>
+  <p style="font-size:11px;color:#93a0a8;text-align:center;line-height:1.8">Your data stays in <strong>your own Google Sheet</strong>.<br/>No sign-in required inside this app.</p>
+</div>
+
+<div id="wrap" style="display:none">
+  <div class="topbar">
+    <div class="greet">
+      <div class="small-note" style="margin-top:4px;display:flex;align-items:center;gap:6px"><span class="dot" id="dot"></span><span id="hsub">Loading…</span></div>
+    </div>
+    <div class="actions">
+      <button id="installBtn" class="obtn" style="display:none;padding:10px 12px;font-size:12px">Install App</button>
+      <button class="icon-btn gold" onclick="openCatBudget()">💎</button>
+      <button class="icon-btn" onclick="openSett()">⚙</button>
+    </div>
+  </div>
+
+  <div class="view on" id="v-dash">
+    <div class="promo-banner">
+      <div class="promo-top">
+        <div class="promo-badge">🌱</div>
+        <div class="promo-kicker">Grocify</div>
+      </div>
+      <div class="promo-title">Track every rupee on your grocery run.</div>
+      <div class="promo-copy">Stay on top of every store visit, item price, and monthly limit in one clean mobile view.</div>
+    </div>
+
+    <div class="home-summary">
+      <div class="summary-block" style="padding-top:0;margin-top:0;border-top:none">
+        <div class="section-title" style="margin-top:0">
+          <h2>Budget</h2>
+          <button onclick="saveBudget()">Save</button>
+        </div>
+        <div class="month-nav" style="margin-bottom:12px">
+          <button onclick="shiftBudgetMonth(-1)">‹</button>
+          <div class="month-nav-main">
+            <strong id="budgetMonthTitle">April 2026</strong>
+            <span id="budgetMonthCount">0 transactions</span>
+          </div>
+          <button onclick="shiftBudgetMonth(1)">›</button>
+        </div>
+        <div class="budget-ring-card" style="box-shadow:none;border:1px solid #f1ede6;margin-bottom:0">
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <input type="number" id="binput" placeholder="Monthly budget ₹" style="border:1px solid #dfe6df;border-radius:14px;padding:10px 12px;font-size:14px;font-family:inherit;flex:1;outline:none"/>
+            <button class="obtn" onclick="saveBudget()">Set</button>
+          </div>
+          <svg width="100%" height="210" viewBox="0 0 320 210">
+            <path d="M 45 165 A 115 115 0 0 1 275 165" fill="none" stroke="#efe9df" stroke-width="22" stroke-linecap="round"/>
+            <path id="arcBar" d="M 45 165 A 115 115 0 0 1 275 165" fill="none" stroke="#d63f3f" stroke-width="22" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+            <text id="ringStatus" x="160" y="104" text-anchor="middle" font-size="12" font-weight="800" fill="#c54848">WITHIN LIMIT</text>
+            <text id="ringValue" x="160" y="138" text-anchor="middle" font-size="22" font-weight="900" fill="#21313a">₹0</text>
+            <text x="55" y="186" font-size="12" fill="#8c98a1">Spent</text>
+            <text id="ringSpent" x="55" y="206" font-size="17" font-weight="900" fill="#21313a">₹0</text>
+            <text x="245" y="186" text-anchor="end" font-size="12" fill="#8c98a1">Limit</text>
+            <text id="ringLimit" x="245" y="206" text-anchor="end" font-size="17" font-weight="900" fill="#21313a">₹0</text>
+          </svg>
+          <div class="budget-warning" id="budgetWarn">Set a monthly budget to get overspending alerts and a cleaner spending target.</div>
+        </div>
+      </div>
+
+      <div id="catAlerts"></div>
+
+      <div class="summary-block">
+        <div class="summary-mini">
+          <div class="stat-card">
+            <small>Average Spend</small>
+            <div class="big" id="da">—</div>
+            <div class="note" id="dc"></div>
+          </div>
+          <div class="stat-card">
+            <small>Top Store</small>
+            <div class="big" id="ds">—</div>
+            <div class="note" id="dsc"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle">Top Items</div>
+      <div id="tItems"></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle">Spending Trend</div>
+      <svg id="schart" width="100%" height="110" viewBox="0 0 320 110"></svg>
+      <div class="mgrid" style="margin-top:10px">
+        <div class="mc"><div class="l">Selected Range</div><div class="v" id="dm">₹0</div><div class="s" id="dv"></div></div>
+        <div class="mc"><div class="l">All Time</div><div class="v" id="dat">₹0</div><div class="s">total recorded</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="v-add">
+    <div class="card">
+      <div id="editBanner" style="display:none;background:#ebf4ff;border:1px solid #cddff6;border-radius:16px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:#2f66a5;align-items:center;justify-content:space-between">
+        <span>Editing purchase</span>
+        <button class="sbtn" onclick="cancelEdit()" style="font-size:11px;padding:6px 10px">Cancel</button>
+      </div>
+      <div class="section-title" style="margin-top:0">
+        <h2>Add Grocery Purchase</h2>
+        <button onclick="dupeLast()">Dupe Last</button>
+      </div>
+      <div class="f"><label>Store</label><div class="chips" id="stChips"></div></div>
+      <div class="f"><label>Date &amp; Time</label><input type="datetime-local" id="aDt" class="fi"/></div>
+      <div class="f"><label>Payment</label><div class="chips" id="pyChips"></div></div>
+      <div class="f">
+        <label>Entry Mode</label>
+        <div class="chips">
+          <div class="chip md on" id="mNorm" onclick="swMode('normal')">Normal</div>
+          <div class="chip md" id="mBulk" onclick="swMode('bulk')">Bulk</div>
+        </div>
+      </div>
+      <div id="normMode">
+        <div class="stitle">Items</div>
+        <div id="iCont"></div>
+        <button class="sbtn" onclick="addRow()" style="margin-bottom:10px">+ Add Item</button>
+      </div>
+      <div id="bulkMode" style="display:none">
+        <div class="f">
+          <label>Name, Category, Qty, Unit, Price</label>
+          <textarea id="bText" rows="6" placeholder="Tomato, Vegetables, 500, g, 40&#10;Milk, Dairy, 1, L, 60&#10;Biscuits, Snacks, 2, packet, 40" style="font-family:Consolas,monospace;font-size:12px" class="fi"></textarea>
+        </div>
+      </div>
+      <div class="f"><label>Notes</label><input type="text" id="aNotes" class="fi" placeholder="e.g. weekly restock"/></div>
+      <div class="tbar">
+        <div><div style="font-size:10px;color:#8d98a1;text-transform:uppercase;letter-spacing:.5px">Total</div><div class="amt" id="aTotal">₹0</div></div>
+        <button class="gbtn" id="saveBtn" onclick="savePurchase()">Save Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="v-list">
+    <div class="subtabs">
+      <div class="stab on" id="st-list" onclick="showSubTab('list')">Shopping List</div>
+      <div class="stab" id="st-sess" onclick="showSubTab('sess')">Past Sessions</div>
+    </div>
+    <div id="sub-list">
+      <div class="card">
+        <div class="section-title" style="margin-top:0">
+          <h2>Add to List</h2>
+          <div class="small-note" id="listHint">Build the next grocery run.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 58px 72px 72px;gap:6px;margin-bottom:10px;align-items:end">
+          <div class="f" style="margin:0">
+            <label>Item</label>
+            <div class="acw">
+              <input type="text" id="lName" class="fi" placeholder="e.g. Tomato" oninput="lAC()" onfocus="lAC()" autocomplete="off"/>
+              <div class="acl" id="lACl" style="display:none"></div>
+            </div>
+          </div>
+          <div class="f" style="margin:0"><label>Qty</label><input type="number" id="lQty" class="fi" value="1" min="0" step="0.1"/></div>
+          <div class="f" style="margin:0"><label>Unit</label><select id="lUnit" class="fi"><option>pcs</option><option>g</option><option>kg</option><option>ml</option><option>L</option><option>packet</option><option>dozen</option></select></div>
+          <div class="f" style="margin:0"><label>Est. ₹</label><input type="number" id="lEst" class="fi" min="0" placeholder="0"/></div>
+        </div>
+        <div class="row">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:#66747d;margin:0">
+            <input type="checkbox" id="lRecur" style="accent-color:var(--accent);width:15px;height:15px"/> Recurring
+          </label>
+          <button class="gbtn" style="padding:10px 18px" onclick="addToList()">Add</button>
+        </div>
+      </div>
+      <div id="lSum" style="display:none;background:#fff;border-radius:18px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow)">
+        <div class="row"><span id="lSumT" style="font-size:12px"></span>
+          <div style="display:flex;gap:6px">
+            <button class="sbtn" onclick="clearChk()">Remove</button>
+            <button class="gbtn" style="padding:8px 13px;font-size:12px" onclick="conv()">Buy Now</button>
+          </div>
+        </div>
+      </div>
+      <div id="lCont"><div class="empty">Your list is empty</div></div>
+    </div>
+    <div id="sub-sess" style="display:none">
+      <div class="card" style="margin-bottom:10px">
+        <div class="section-title" style="margin-top:0">
+          <h2>Transactions</h2>
+          <div class="small-note" id="sessCount">0 sessions</div>
+        </div>
+        <div class="month-nav">
+          <button onclick="shiftSessionMonth(-1)">‹</button>
+          <div class="month-nav-main">
+            <strong id="sessionMonthTitle">April 2026</strong>
+            <span id="sessionMonthCount">0 transactions</span>
+          </div>
+          <button onclick="shiftSessionMonth(1)">›</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#87949d;margin-bottom:10px">Grouped by date so recent sessions are easier to scan.</div>
+      <div id="sessContainer"></div>
+    </div>
+  </div>
+
+  <div class="view" id="v-hist">
+    <div class="card" style="margin-bottom:12px">
+      <div class="section-title" style="margin-top:0">
+        <h2>Analysis</h2>
+        <button onclick="expCSV()">Export CSV</button>
+      </div>
+      <div class="f" style="margin-bottom:10px"><input type="search" id="hSrch" class="fi" placeholder="Search items, store, notes…" oninput="renderHist()"/></div>
+      <div class="chip-row" id="hSF"></div>
+      <div class="small-note" id="hCnt" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle">Category Spending</div>
+      <div id="histPie"></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle">Store Price Comparison</div>
+      <div id="compT"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card"><div class="stitle">By Store</div><div id="stSp"></div></div>
+      <div class="card"><div class="stitle">Payments</div><div id="paySp"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle">Item Price Tracker</div>
+      <div class="acw">
+        <input type="text" id="iSrch" class="fi" placeholder="Search item to see price history…" oninput="iAC()" onfocus="iAC()" autocomplete="off"/>
+        <div class="acl" id="iACl" style="display:none"></div>
+      </div>
+      <div id="iRes" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div class="view" id="v-ins">
+    <div class="tool-grid">
+      <div class="tool-card" onclick="openListSessions()">
+        <div class="tool-icon">📋</div>
+        <div><h3>Transactions</h3><p>Open past sessions grouped by date.</p></div>
+      </div>
+      <div class="tool-card" onclick="openListShopping()">
+        <div class="tool-icon">🗓</div>
+        <div><h3>Planned Runs</h3><p>Jump straight to your shopping list.</p></div>
+      </div>
+      <div class="tool-card" onclick="openCatBudget()">
+        <div class="tool-icon">💰</div>
+        <div><h3>Budgets</h3><p>Monthly and category targets.</p></div>
+      </div>
+      <div class="tool-card" onclick="openCalendarView()">
+        <div class="tool-icon">CAL</div>
+        <div><h3>Calendar</h3><p>Open the monthly calendar and tap any day.</p></div>
+      </div>
+      <div class="tool-card" onclick="goTab('hist',document.getElementById('navHist'))">
+        <div class="tool-icon">🧩</div>
+        <div><h3>Categories</h3><p>See what’s driving spend.</p></div>
+      </div>
+    </div>
+
+    <div class="calendar-panel" id="calendarPanel">
+    <div class="section-title">
+      <h2>Calendar View</h2>
+      <button onclick="closeCalendarView()">Close</button>
+    </div>
+    <div class="calendar-shell" id="calendarSection">
+      <div class="calendar-head">
+        <button onclick="shiftCalendarMonth(-1)">‹</button>
+        <div>
+          <strong id="calTitle">April 2026</strong>
+          <span id="calCount">0 transactions</span>
+        </div>
+        <button onclick="shiftCalendarMonth(1)">›</button>
+      </div>
+      <div class="calendar-weekdays">
+        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div id="calendarDayPanel">
+        <div class="calendar-empty" id="calendarDayEmpty">Tap a date to see that day's transactions.</div>
+        <div id="calendarDayContent" style="display:none">
+          <div class="calendar-day-meta">
+            <div>
+              <strong id="calendarDayTitle">Selected Day</strong>
+              <span id="calendarDayCount">0 transactions</span>
+            </div>
+            <button class="sbtn" style="padding:8px 12px;font-size:12px" onclick="clearCalendarSelection()">Clear</button>
+          </div>
+          <div class="calendar-day-list" id="calendarDayTransactions"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle">Settings</div>
+      <div class="settings-card" style="padding:0;box-shadow:none;border:none">
+        <div>
+          <strong>Sync Source</strong>
+          <span id="sSC">default</span>
+        </div>
+        <button class="obtn" onclick="openSett()">Open</button>
+      </div>
+      <div class="mval" id="sURL" style="margin-top:12px;margin-bottom:0"></div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-shell">
+      <button class="on" id="navDash" onclick="goTab('dash',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+        Home
+      </button>
+      <button id="navHist" onclick="goTab('hist',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analysis
+      </button>
+      <button class="add-btn" id="navAdd" onclick="goTab('add',this)">
+        <span class="add-icon" aria-hidden="true"></span>
+        Add
+      </button>
+      <button id="navList" onclick="goTab('list',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+        <span id="lNavLbl">List</span>
+      </button>
+      <button id="navIns" onclick="goTab('ins',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L4.21 7.1a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .67.39 1.28 1 1.51.16.06.33.09.51.09H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        More
+      </button>
+    </div>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<div class="overlay" id="settMod" onclick="if(event.target===this)closeSett()">
+  <div class="sheet">
+    <h3>Settings</h3>
+    <div class="mlbl">Sync Code</div><div class="mval" id="settSyncCode"></div>
+    <div class="mlbl">Apps Script URL</div><div class="mval" id="settURL"></div>
+    <button class="obtn" style="width:100%;margin-bottom:9px" onclick="window.open('https://docs.google.com/spreadsheets','_blank')">Open Google Sheets</button>
+    <button class="rbtn" style="width:100%;padding:11px;font-size:13px;margin-bottom:7px" onclick="resetApp()">Change URL / Sync Code</button>
+    <button class="sbtn" style="width:100%;padding:11px;font-size:13px" onclick="closeSett()">Close</button>
+  </div>
+</div>
+
+<div class="overlay" id="catBudMod" onclick="if(event.target===this)closeCatBudget()">
+  <div class="sheet">
+    <h3>Category Budget Limits</h3>
+    <p style="font-size:12px;color:#86939c;margin-bottom:14px">Set monthly caps per category so the dashboard can warn you before you overspend.</p>
+    <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px">
+      <div style="flex:1">
+        <div class="mlbl">Apply To All</div>
+        <input type="number" min="0" id="catBudAll" placeholder="Same limit for all categories"
+          style="width:100%;border:1px solid #dfe6df;border-radius:12px;padding:10px 11px;font-size:13px;font-family:inherit;outline:none"/>
+      </div>
+      <button class="obtn" style="padding:10px 14px" onclick="applyAllCatBudgets()">Apply</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:#fffaf2;border:1px solid #eee2d1;border-radius:16px;padding:12px 14px;margin-bottom:12px">
+      <div>
+        <div class="mlbl" style="margin-bottom:3px">Total Category Limits</div>
+        <div style="font-size:11px;color:#97a3ac">Combined limit across all categories</div>
+      </div>
+      <div style="font-size:18px;font-weight:900;color:var(--text)" id="catBudTotal">₹0</div>
+    </div>
+    <div id="catBudFields"></div>
+    <button class="gbtn" style="width:100%;margin-bottom:8px" onclick="saveCatBudgets()">Save Limits</button>
+    <button class="sbtn" style="width:100%;padding:11px" onclick="closeCatBudget()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const STORES=['Dmart','RelianceMart','Local Shop','Other'];
+const CATS=['Vegetables','Fruits','Pulses','Dairy','Meat & Fish','Snacks','Beverages','Frozen','Household','Personal','Baby','Other'];
+const PAYS=['Cash','UPI','Credit Card UPI'];
+const UNITS=['pcs','g','kg','ml','L','packet','dozen'];
+const DASH_ORDER=['week','month','year','all'];
+const CATEGORY_ICONS={
+  'Vegetables':'🥦','Fruits':'🍎','Pulses':'🫘','Dairy':'🥛','Meat & Fish':'🍗','Snacks':'🍪','Beverages':'🥤',
+  'Frozen':'🧊','Household':'🧽','Personal':'🧴','Baby':'🧸','Other':'🧾'
+};
+
+const CCOLOR={
+  'Vegetables':'#639922','Fruits':'#D85A30','Pulses':'#9A6B2F','Dairy':'#378ADD',
+  'Meat & Fish':'#A32D2D','Snacks':'#EF9F27','Beverages':'#1D9E75',
+  'Frozen':'#185FA5','Household':'#888780','Personal':'#D4537E',
+  'Baby':'#E07B7B','Other':'#aaa'
+};
+const CTAG_BG={
+  'Vegetables':'#EAF3DE','Fruits':'#FAECE7','Pulses':'#F5E8D7','Dairy':'#E6F1FB',
+  'Meat & Fish':'#FCEBEB','Snacks':'#FAEEDA','Beverages':'#E1F5EE',
+  'Frozen':'#E6F1FB','Household':'#F1EFE8','Personal':'#FBEAF0',
+  'Baby':'#FFF0F0','Other':'#F4F5F0'
+};
+
+const SUGG={
+  'Vegetables':['Tomatoes','Onions','Potatoes','Drumsticks','Dondakaya','Chikkudukaya','Carrots','Beetroot','Spinach','Capsicum','Cauliflower','Beans','Peas','Cabbage','Lady Finger','Brinjal','Garlic','Ginger','Coriander','Lemons','Cucumber','Radish','Mushroom'],
+  'Fruits':['Apples','Bananas','Mangos','Oranges','Grapes','Watermelon','Papaya','Guava','Pomegranate','Pineapple','Strawberry','Kiwi','Pear','Litchi','Chikoo','Coconut','Plum','Peach'],
+  'Pulses':['Toor Dal','Moong Dal','Urad Dal','Chana Dal','Rajma','Chickpeas','Black Gram','Green Gram','Masoor Dal','Peanuts'],
+  'Dairy':['Milk','Curd','Butter','Paneer','Cheese','Ghee','Cream','Buttermilk','Lassi','Amul Taza','Amul Gold'],
+  'Meat & Fish':['Chicken','Mutton','Fish','Prawns','Eggs','Crab','Tuna','Salmon','Sardine','Catfish'],
+  'Snacks':['Biscuits','Chips','Namkeen','Cookies','Chocolates','Crackers','Popcorn','Nuts','Murukku','Lays','Kurkure','Peanuts','Mixture','Sweets'],
+  'Beverages':['Tea','Coffee','Juice','Soft Drink','Water Bottle','Energy Drink','Coconut Water','Milkshake','Lassi','Green Tea'],
+  'Frozen':['Ice Cream'],
+  'Household':['Detergent','Soap','Shampoo','Toothpaste','Dishwash','Tissues','Toilet Paper','Garbage Bags','Floor Cleaner','Surf Excel','Vim','Lizol','Phenyl','Mosquito Repellent'],
+  'Personal':['Face Wash','Moisturizer','Deodorant','Razor','Sanitary Pads','Cotton','Lotion','Sunscreen','Lip Balm'],
+  'Baby':['Baby Soap','Baby Powder','Diapers','Baby Oil','Baby Shampoo','Baby Food','Baby Wipes','Rash Cream'],
+  'Other':[]
+};
+const ALL_ITEMS=Object.values(SUGG).flat();
+
+let GAS_URL='',DKEY='',SCODE='';
+let purchases=[],shopList=[],budget=0,catBudgets={},deletedIds=[];
+// Reference arrays for defaults so changes to STORES/PAYS propagate automatically
+let selSt=STORES[0],selPy=PAYS[1],curMd='normal';
+let iRows=[],histSF='All';
+let autoT=null,editingId=null;
+let serverVersion=0;
+let dashRange='month';
+// Use a single Date snapshot to avoid midnight-boundary race on cursor init
+const _initNow=new Date();
+let calCursor=new Date(_initNow.getFullYear(),_initNow.getMonth(),1);
+let budgetCursor=new Date(_initNow.getFullYear(),_initNow.getMonth(),1);
+let sessionCursor=new Date(_initNow.getFullYear(),_initNow.getMonth(),1);
+let selectedCalendarDate=null;
+// Cache for lastPrice() — rebuilt whenever purchases changes
+let _priceCache={};
+function _buildPriceCache(){
+  _priceCache={};
+  purchases.flatMap(p=>p.items.map(it=>({...it,datetime:p.datetime,store:p.store})))
+    .sort((a,b)=>new Date(b.datetime)-new Date(a.datetime))
+    .forEach(it=>{const k=it.name.toLowerCase();if(!_priceCache[k])_priceCache[k]=it;});
+}
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fmt=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
+// Fix #13: include year so exported dates are unambiguous
+const fmtS=d=>new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+const fmtL=d=>new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const mKey=d=>{const dt=new Date(d);return`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;};
+const curM=()=>mKey(new Date());
+// Fix #1: escape ALL HTML-significant characters, not just single quotes
+const safeText=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const uniq=list=>[...new Set((list||[]).filter(Boolean))];
+
+function toast(msg,dur=2200){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),dur);
+}
+function setDot(s){
+  const d=document.getElementById('dot');
+  if(d)d.className='dot'+(s==='syncing'?' syncing':s==='off'?' off':'');
+  updateHdr(s);
+}
+function getConnectionLabel(state){
+  if(state==='syncing') return 'Syncing';
+  if(state==='off'||navigator.onLine===false) return 'Offline';
+  return 'Online';
+}
+function unitPrice(price,qty,unit){
+  const p=parseFloat(price)||0,q=parseFloat(qty)||1;
+  if(!p||!q) return '';
+  const pu=p/q;
+  if(unit==='g') return `₹${(pu*1000).toFixed(0)}/kg`;
+  if(unit==='ml') return `₹${(pu*1000).toFixed(0)}/L`;
+  if(unit==='dozen') return `₹${(pu/12).toFixed(1)}/pc`;
+  if(unit==='kg') return `₹${pu.toFixed(1)}/kg`;
+  if(unit==='L') return `₹${pu.toFixed(1)}/L`;
+  return `₹${pu.toFixed(1)}/${unit}`;
+}
+function lastPrice(itemName){
+  // O(1) lookup using pre-built cache instead of O(n×m) scan on every call
+  return _priceCache[itemName.toLowerCase()]||null;
+}
+// Fix #11: store/pay cases merged here — no monkey-patch needed at bottom of file
+function tag(cat,txt){
+  if(cat==='store') return `<span class="tag" style="background:#fff3de;color:#7a5b15">${safeText(txt||cat)}</span>`;
+  if(cat==='py'||cat==='pay') return `<span class="tag" style="background:#eaf2ff;color:#2f66a5">${safeText(txt||cat)}</span>`;
+  const bg=CTAG_BG[cat]||'#f4f5f0',cl=CCOLOR[cat]||'#888';
+  return `<span class="tag" style="background:${bg};color:${cl}">${safeText(txt||cat.slice(0,3))}</span>`;
+}
+function periodLabel(v){
+  return v==='week'?'This Week':v==='month'?'This Month':v==='year'?'This Year':'All Time';
+}
+// Fix #8: "week" now means Mon–Sun calendar week, not rolling 7 days
+function inRange(date,range){
+  const d=new Date(date),now=new Date();
+  if(range==='all') return true;
+  if(range==='week'){
+    const day=now.getDay();
+    const monday=new Date(now);
+    monday.setDate(now.getDate()-day+(day===0?-6:1));
+    monday.setHours(0,0,0,0);
+    return d>=monday&&d<=now;
+  }
+  if(range==='year') return d.getFullYear()===now.getFullYear();
+  return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+}
+function inMonth(date,cursor){
+  const d=new Date(date);
+  return d.getFullYear()===cursor.getFullYear()&&d.getMonth()===cursor.getMonth();
+}
+function rangePurchases(range){return purchases.filter(p=>inRange(p.datetime,range));}
+function categoryIcon(cat){
+  const map={
+    'Vegetables':'VE',
+    'Fruits':'FR',
+    'Pulses':'PU',
+    'Dairy':'DA',
+    'Meat & Fish':'MF',
+    'Snacks':'SN',
+    'Beverages':'BV',
+    'Frozen':'FZ',
+    'Household':'HH',
+    'Personal':'PE',
+    'Baby':'BY',
+    'Other':'OT'
+  };
+  return map[cat]||'OT';
+}
+function recentIcon(p){
+  const cat=p.items?.[0]?.category||'Other';
+  if(cat==='Vegetables'||cat==='Fruits') return ['🛒',''];
+  if(cat==='Snacks'||cat==='Beverages') return ['🍽','food'];
+  if(cat==='Household'||cat==='Personal') return ['🧼',''];
+  return ['🛍',''];
+}
+
+async function gasGet(){
+  try{
+    setDot('syncing');
+    const r=await fetch(`${GAS_URL}?key=${encodeURIComponent(DKEY)}`);
+    if(!r.ok){setDot('off');return null;}
+    const d=await r.json();
+    setDot('on');
+    return d;
+  }catch{
+    setDot('off');
+    return null;
+  }
+}
+async function gasPost(data){
+  try{
+    setDot('syncing');
+    const r=await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({key:DKEY,...data})
+    });
+    if(!r.ok){setDot('off');return null;}
+    const res=await r.json();
+    setDot('on');
+    if(res.version) serverVersion=res.version;
+    return res;
+  }catch{
+    setDot('off');
+    return null;
+  }
+}
+function saveLocal(){
+  deletedIds=uniq(deletedIds);
+  localStorage.setItem('gt_p',JSON.stringify(purchases));
+  localStorage.setItem('gt_l',JSON.stringify(shopList));
+  localStorage.setItem('gt_b',String(budget));
+  localStorage.setItem('gt_cb',JSON.stringify(catBudgets));
+  localStorage.setItem('gt_del',JSON.stringify(deletedIds));
+}
+async function push(){
+  saveLocal();
+  return await gasPost({purchases,list:shopList,budget,catBudgets,deletedIds:uniq(deletedIds)});
+}
+async function pull(){
+  const d=await gasGet();
+  if(!d) return;
+  if(Array.isArray(d.purchases)) purchases=d.purchases;
+  if(Array.isArray(d.list)) shopList=d.list;
+  if(d.budget!==undefined) budget=parseFloat(d.budget)||0;
+  if(d.catBudgets) catBudgets=d.catBudgets;
+  if(d.deletedIds) deletedIds=uniq(d.deletedIds);
+  if(d.version) serverVersion=d.version;
+  saveLocal();
+  _buildPriceCache();
+  renderDash();
+  renderList();
+  renderHist();
+  // Fix #27: updateHdr() removed here — renderDash() already calls it
+}
+
+function copyScript(){
+  const txt=document.getElementById('scriptTxt').textContent;
+  navigator.clipboard.writeText(txt)
+    .then(()=>toast('Script copied'))
+    .catch(()=>toast('Copy failed — please select and copy manually'));
+}
+
+async function startApp(){
+  const url=(document.getElementById('sUrl').value||'').trim();
+  const code=(document.getElementById('sCode').value||'').trim().toLowerCase().replace(/\s+/g,'_')||'default';
+  if(!url){toast('Please paste your Apps Script URL');return;}
+  // Fix #6: use URL parser to prevent bypass via ?q=script.google.com tricks
+  try{
+    const host=new URL(url).hostname;
+    if(!host.endsWith('.google.com')){toast('That does not look like an Apps Script URL');return;}
+  }catch{toast('Invalid URL — please check and try again');return;}
+  GAS_URL=url;
+  SCODE=code;
+  DKEY='gt_'+code;
+  localStorage.setItem('gt_url',GAS_URL);
+  localStorage.setItem('gt_code',SCODE);
+  localStorage.setItem('gt_dkey',DKEY);
+  // Fix #10: JSON.parse without try/catch crashes silently on corrupted data
+  try{purchases=JSON.parse(localStorage.getItem('gt_p')||'[]');}catch{purchases=[];}
+  try{shopList=JSON.parse(localStorage.getItem('gt_l')||'[]');}catch{shopList=[];}
+  budget=parseFloat(localStorage.getItem('gt_b')||'0');
+  try{catBudgets=JSON.parse(localStorage.getItem('gt_cb')||'{}');}catch{catBudgets={};}
+  try{deletedIds=uniq(JSON.parse(localStorage.getItem('gt_del')||'[]'));}catch{deletedIds=[];}
+  _buildPriceCache();
+  document.getElementById('setup').style.display='none';
+  document.getElementById('wrap').style.display='block';
+  initApp();
+  toast('Connecting to Google Sheet…');
+  await pull();
+  startAutoSync();
+}
+
+function initApp(){
+  const sc=document.getElementById('stChips');
+  if(!sc.children.length){
+    STORES.forEach((s,i)=>{
+      const c=document.createElement('div');
+      c.className='chip st'+(i===0?' on':'');
+      c.textContent=s;
+      c.onclick=()=>{
+        selSt=s;
+        sc.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+        c.classList.add('on');
+      };
+      sc.appendChild(c);
+    });
+  }
+  const pc=document.getElementById('pyChips');
+  if(!pc.children.length){
+    PAYS.forEach((p,i)=>{
+      const c=document.createElement('div');
+      c.className='chip py'+(i===1?' on':'');
+      c.textContent=p;
+      c.onclick=()=>{
+        selPy=p;
+        pc.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+        c.classList.add('on');
+      };
+      pc.appendChild(c);
+    });
+  }
+  if(!document.getElementById('aDt').value) document.getElementById('aDt').value=new Date().toISOString().slice(0,16);
+  if(budget>0) document.getElementById('binput').value=budget;
+  if(!iRows.length) addRow();
+  document.getElementById('sSC').textContent=SCODE;
+  document.getElementById('sURL').textContent=GAS_URL;
+  document.getElementById('settSyncCode').textContent=SCODE;
+  document.getElementById('settURL').textContent=GAS_URL;
+  updateHdr();
+}
+
+function startAutoSync(){
+  clearInterval(autoT);
+  autoT=setInterval(async()=>{
+    // Fix #15: skip sync if user is actively editing a purchase to avoid overwriting mid-entry
+    if(editingId||document.getElementById('v-add').classList.contains('on')) return;
+    const d=await gasGet();
+    if(!d||d.version===serverVersion) return;
+    if(Array.isArray(d.purchases)) purchases=d.purchases;
+    if(Array.isArray(d.list)) shopList=d.list;
+    if(d.budget!==undefined) budget=parseFloat(d.budget)||0;
+    if(d.catBudgets) catBudgets=d.catBudgets;
+    if(d.deletedIds) deletedIds=uniq(d.deletedIds);
+    serverVersion=d.version||0;
+    saveLocal();
+    _buildPriceCache();
+    renderDash();
+    renderList();
+    renderHist();
+    updateHdr();
+  },30000);
+}
+
+function goTab(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('v-'+id).classList.add('on');
+  if(btn && btn.id) btn.classList.add('on');
+  if(id==='dash') renderDash();
+  if(id==='hist'){renderHSF();renderHist();}
+  if(id==='ins') renderIns();
+  if(id==='list') renderList();
+  if(id==='add') document.getElementById('saveBtn').textContent=editingId?'Update Purchase':'Save Purchase';
+}
+function showSubTab(id){
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('st-'+id).classList.add('on');
+  document.getElementById('sub-list').style.display=id==='list'?'block':'none';
+  document.getElementById('sub-sess').style.display=id==='sess'?'block':'none';
+  if(id==='sess') renderSessions();
+}
+function shiftBudgetMonth(delta){
+  budgetCursor=new Date(budgetCursor.getFullYear(),budgetCursor.getMonth()+delta,1);
+  renderDash();
+}
+function shiftSessionMonth(delta){
+  sessionCursor=new Date(sessionCursor.getFullYear(),sessionCursor.getMonth()+delta,1);
+  renderSessions();
+}
+function openListSessions(){
+  goTab('list',document.getElementById('navList'));
+  showSubTab('sess');
+}
+function openListShopping(){
+  goTab('list',document.getElementById('navList'));
+  showSubTab('list');
+}
+function openCalendarView(){
+  const panel=document.getElementById('calendarPanel');
+  if(!panel) return;
+  panel.classList.add('on');
+  renderCalendarView();
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeCalendarView(){
+  document.getElementById('calendarPanel')?.classList.remove('on');
+}
+function setDashRangeFromMore(v){
+  dashRange=v;
+  goTab('dash',document.getElementById('navDash'));
+}
+
+function svgPie(data,size=150){
+  const total=data.reduce((s,d)=>s+d.value,0);
+  if(!total) return '<div class="empty" style="padding:.5rem">No data</div>';
+  const cx=size/2,cy=size/2,r=size/2-10,ir=r*0.55;
+  let angle=-Math.PI/2,paths='',leg='';
+  data.filter(d=>d.value>0).forEach(d=>{
+    const pct=d.value/total,slice=pct*Math.PI*2;
+    const a1=angle,a2=angle+slice;
+    const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const ix1=cx+ir*Math.cos(a2),iy1=cy+ir*Math.sin(a2);
+    const ix2=cx+ir*Math.cos(a1),iy2=cy+ir*Math.sin(a1);
+    const large=slice>Math.PI?1:0;
+    paths+=`<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large},1 ${x2.toFixed(1)},${y2.toFixed(1)} L${ix1.toFixed(1)},${iy1.toFixed(1)} A${ir},${ir} 0 ${large},0 ${ix2.toFixed(1)},${iy2.toFixed(1)} Z" fill="${d.color}" stroke="#fff" stroke-width="1.5"/>`;
+    leg+=`<div class="pie-row"><div class="pie-dot" style="background:${d.color}"></div><span style="font-size:11px;flex:1;color:#44515a">${d.label}</span><span style="font-size:11px;color:#88959f;font-weight:700">${fmt(d.value)}</span></div>`;
+    angle=a2;
+  });
+  paths+=`<circle cx="${cx}" cy="${cy}" r="${ir-1}" fill="#fff"/>`;
+  return `<div class="pie-wrap"><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${paths}</svg><div class="pie-legend">${leg}</div></div>`;
+}
+
+function getCatSpend(rangeOrMonth){
+  let ps=purchases;
+  if(!rangeOrMonth) ps=purchases;
+  else if(['week','month','year','all'].includes(rangeOrMonth)) ps=rangePurchases(rangeOrMonth);
+  else ps=purchases.filter(p=>mKey(p.datetime)===rangeOrMonth);
+  return ps.flatMap(p=>p.items).reduce((a,it)=>{
+    const v=parseFloat(it.price||0);
+    a[it.category]=(a[it.category]||0)+v;
+    return a;
+  },{});
+}
+
+function renderDash(){
+  const list=purchases.filter(p=>inMonth(p.datetime,budgetCursor));
+  const total=list.reduce((s,p)=>s+p.total,0);
+  const allT=purchases.reduce((s,p)=>s+p.total,0);
+  const avg=list.length?total/list.length:0;
+  const remaining=(budget||0)-total;
+  const stC=list.reduce((a,p)=>{a[p.store]=(a[p.store]||0)+1;return a;},{});
+  const tSt=Object.entries(stC).sort((a,b)=>b[1]-a[1])[0];
+  const heroBudget=budget||0;
+  const pctBudget=heroBudget>0?Math.min((total/heroBudget)*100,100):0;
+  const over=heroBudget>0&&total>heroBudget;
+  const ringColor=over?'#d63f3f':'#305f39';
+
+  document.getElementById('budgetMonthTitle').textContent=budgetCursor.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  document.getElementById('budgetMonthCount').textContent=`${list.length} transaction${list.length!==1?'s':''}`;
+  document.getElementById('dm').textContent=fmt(total);
+  document.getElementById('dv').textContent=`${list.length} visit${list.length!==1?'s':''} in ${budgetCursor.toLocaleDateString('en-IN',{month:'short',year:'numeric'})}`;
+  document.getElementById('da').textContent=list.length?fmt(Math.round(avg)):'—';
+  document.getElementById('dc').textContent=list.length?`${list.length} purchase${list.length!==1?'s':''}`:'No purchases yet';
+  document.getElementById('ds').textContent=tSt?tSt[0]:'—';
+  document.getElementById('dsc').textContent=tSt?`${tSt[1]} visit${tSt[1]!==1?'s':''}`:'Add more data';
+  document.getElementById('dat').textContent=fmt(allT);
+
+  document.getElementById('arcBar').setAttribute('stroke',ringColor);
+  document.getElementById('arcBar').setAttribute('stroke-dasharray',`${pctBudget.toFixed(1)} 100`);
+  document.getElementById('ringStatus').textContent=heroBudget?(over?'LIMIT EXCEEDED':'WITHIN LIMIT'):'NO BUDGET';
+  document.getElementById('ringStatus').setAttribute('fill',over?'#c54848':'#305f39');
+  document.getElementById('ringValue').textContent=heroBudget?`${remaining<0?'-':''}${fmt(Math.abs(remaining))}`:'₹0';
+  document.getElementById('ringSpent').textContent=fmt(total);
+  document.getElementById('ringLimit').textContent=heroBudget?fmt(heroBudget):'₹0';
+  document.getElementById('budgetWarn').className='budget-warning'+(over?' over':'');
+  document.getElementById('budgetWarn').textContent=
+    !heroBudget?'Set a monthly budget to get overspending alerts and a cleaner spending target.'
+    :over?`Limit crossed. You are over by ${fmt(total-heroBudget)} in ${budgetCursor.toLocaleDateString('en-IN',{month:'long'})}.`
+    :`${fmt(heroBudget-total)} left in budget. Keep an eye on snacks, beverages, and impulse adds.`;
+
+  if(budget>0) document.getElementById('binput').value=budget;
+
+  const catS=getCatSpend(mKey(budgetCursor));
+  let alerts='';
+  CATS.forEach(cat=>{
+    const lim=parseFloat(catBudgets[cat])||0,sp=catS[cat]||0;
+    if(!lim) return;
+    const pct2=sp/lim;
+    if(pct2>=1) alerts+=`<div class="alert alert-red"><strong>${cat}</strong> is over budget at ${fmt(sp)} of ${fmt(lim)}.</div>`;
+    else if(pct2>=0.8) alerts+=`<div class="alert"><strong>${cat}</strong> is at ${Math.round(pct2*100)}% of its monthly limit.</div>`;
+  });
+  document.getElementById('catAlerts').innerHTML=alerts;
+
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth()-i);
+    months.push({key:mKey(d),label:d.toLocaleDateString('en-IN',{month:'short'})});
+  }
+  const data=months.map(m=>({
+    label:m.label,
+    val:purchases.filter(p=>mKey(p.datetime)===m.key).reduce((s,p)=>s+p.total,0),
+    cur:m.key===curM()
+  }));
+  const mx=Math.max(...data.map(d=>d.val),1),bW=34,H=78,sp2=(320-bW*6)/7;
+  document.getElementById('schart').innerHTML=data.map((d,i)=>{
+    const x=sp2+i*(bW+sp2),bh=Math.max((d.val/mx)*H,d.val>0?3:0),y=H-bh+8;
+    return `<rect x="${x}" y="${y}" width="${bW}" height="${bh}" rx="8" fill="${d.cur?'#21313a':'#a8d5b0'}"/><text x="${x+bW/2}" y="102" text-anchor="middle" font-size="9" fill="#98a4ac" font-family="inherit">${d.label}</text>${d.val>0?`<text x="${x+bW/2}" y="${y-4}" text-anchor="middle" font-size="8" fill="${d.cur?'#21313a':'#7e8a93'}" font-family="inherit">${d.val>=1000?(d.val/1000).toFixed(1)+'k':Math.round(d.val)}</text>`:''}`;
+  }).join('');
+
+  const iC=list.flatMap(p=>p.items).reduce((a,it)=>{a[it.name]=(a[it.name]||0)+1;return a;},{});
+  const tI=Object.entries(iC).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('tItems').innerHTML=tI.length?tI.map(([n,c])=>{
+    const cat=purchases.flatMap(p=>p.items).find(it=>it.name===n)?.category||'Other';
+    const lp=lastPrice(n);
+    return `<div class="row" style="padding:7px 0;border-bottom:1px solid #f1ede6">
+      <div style="display:flex;align-items:center;gap:8px">${tag(cat,cat.slice(0,3))}<span style="font-size:13px">${n}</span>${lp?`<span style="font-size:10px;color:#97a3ac">${fmt(parseFloat(lp.price))}</span>`:''}</div>
+      <span style="font-size:12px;color:#87949d;font-weight:700">×${c}</span>
+    </div>`;
+  }).join(''):'<div class="empty" style="padding:.5rem">No data yet</div>';
+
+  updateHdr();
+}
+
+function unitSpendHint(cat,sp){
+  const lim=parseFloat(catBudgets[cat])||0;
+  if(!lim) return 'No cap';
+  const diff=lim-sp;
+  return diff>=0?`${fmt(diff)} left`:`${fmt(Math.abs(diff))} over`;
+}
+
+function updateHdr(state){
+  const un=shopList.filter(it=>!it.checked).length;
+  const status=getConnectionLabel(state);
+  document.getElementById('hsub').textContent=`${status} · ${purchases.length} purchases · ${un} pending`;
+  document.getElementById('lNavLbl').textContent=`List${un>0?` (${un})`:''}`;
+  document.getElementById('sSC').textContent=SCODE||'default';
+  document.getElementById('sURL').textContent=GAS_URL||'Not connected yet';
+  const now=new Date();
+  document.getElementById('settSyncCode').textContent=SCODE||'default';
+  document.getElementById('settURL').textContent=GAS_URL||'Not connected yet';
+  const backupInfoEl=document.getElementById('backupInfo');
+  if(backupInfoEl){
+    backupInfoEl.textContent=`Last backup view ${now.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})} at ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+}
+
+async function saveBudget(){
+  budget=parseFloat(document.getElementById('binput').value)||0;
+  renderDash();
+  await push();
+  toast('Budget saved');
+}
+
+function openCatBudget(){
+  document.getElementById('catBudFields').innerHTML=CATS.map(cat=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="flex:1;font-size:13px;display:flex;align-items:center;gap:8px">${tag(cat,cat.slice(0,3))} ${cat}</div>
+      <input type="number" min="0" id="cb_${cat.replace(/[^a-z]/gi,'_')}" value="${catBudgets[cat]||''}" placeholder="₹ limit"
+        oninput="updateCatBudgetTotal()"
+        style="width:110px;border:1px solid #dfe6df;border-radius:12px;padding:8px 9px;font-size:13px;font-family:inherit;outline:none;text-align:right"/>
+    </div>`).join('');
+  document.getElementById('catBudAll').value='';
+  updateCatBudgetTotal();
+  document.getElementById('catBudMod').classList.add('on');
+}
+function closeCatBudget(){document.getElementById('catBudMod').classList.remove('on');}
+function updateCatBudgetTotal(){
+  const total=CATS.reduce((sum,cat)=>{
+    const el=document.getElementById('cb_'+cat.replace(/[^a-z]/gi,'_'));
+    return sum+(parseFloat(el?.value)||0);
+  },0);
+  const totalEl=document.getElementById('catBudTotal');
+  if(totalEl) totalEl.textContent=fmt(total);
+}
+function applyAllCatBudgets(){
+  const amount=parseFloat(document.getElementById('catBudAll')?.value)||0;
+  CATS.forEach(cat=>{
+    const el=document.getElementById('cb_'+cat.replace(/[^a-z]/gi,'_'));
+    if(el) el.value=amount>0?amount:'';
+  });
+  updateCatBudgetTotal();
+}
+async function saveCatBudgets(){
+  CATS.forEach(cat=>{
+    const v=parseFloat(document.getElementById('cb_'+cat.replace(/[^a-z]/gi,'_'))?.value)||0;
+    if(v>0) catBudgets[cat]=v;
+    else delete catBudgets[cat];
+  });
+  closeCatBudget();
+  renderDash();
+  await push();
+  toast('Category budgets saved');
+}
+
+function swMode(m){
+  curMd=m;
+  document.getElementById('normMode').style.display=m==='normal'?'block':'none';
+  document.getElementById('bulkMode').style.display=m==='bulk'?'block':'none';
+  document.getElementById('mNorm').classList.toggle('on',m==='normal');
+  document.getElementById('mBulk').classList.toggle('on',m==='bulk');
+}
+
+function addRow(n='',cat='Vegetables',qty='1',unit='pcs',price=''){
+  const id=uid();
+  iRows.push(id);
+  const w=document.getElementById('iCont');
+  const r=document.createElement('div');
+  r.id='r-'+id;
+  r.style.cssText='background:#fcfbf8;border:1px solid #ebe6dc;border-radius:18px;padding:12px;margin-bottom:8px';
+  r.innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr auto;gap:5px;margin-bottom:7px;align-items:start">
+    <div class="acw"><input type="text" id="n-${id}" value="${safeText(n)}" placeholder="Item name"
+      oninput="rAC('${id}')" onfocus="rAC('${id}')" autocomplete="off"
+      onblur="autoFillPrice('${id}')"
+      style="width:100%;border:1px solid #dfe6df;border-radius:14px;padding:10px 11px;font-size:14px;font-family:inherit;outline:none;background:#fff"/>
+    <div class="acl" id="ac-${id}" style="display:none"></div>
+    <div class="autofill-hint" id="af-${id}"></div></div>
+    <button onclick="removeRow('${id}')" style="background:none;border:none;color:#c2c9ce;font-size:22px;cursor:pointer;padding:3px 7px;line-height:1">×</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:4px">
+    <div>
+      <div class="flbl">Category</div>
+      <select id="c-${id}" style="width:100%;border:1px solid #dfe6df;border-radius:12px;padding:9px 6px;font-size:12px;font-family:inherit;outline:none;background:#fff">
+        ${CATS.map(c=>`<option${c===cat?' selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <div class="flbl">Qty</div>
+      <input type="number" id="q-${id}" value="${qty}" min="0" step="0.1" oninput="calcT();updUP('${id}')"
+        style="width:100%;border:1px solid #dfe6df;border-radius:12px;padding:9px 10px;font-size:14px;font-family:inherit;outline:none;background:#fff"/>
+    </div>
+    <div>
+      <div class="flbl">Unit</div>
+      <select id="u-${id}" style="width:100%;border:1px solid #dfe6df;border-radius:12px;padding:9px 5px;font-size:12px;font-family:inherit;outline:none;background:#fff"
+        onchange="updUP('${id}')">
+        ${UNITS.map(u=>`<option${u===unit?' selected':''}>${u}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <div class="flbl">Price ₹</div>
+      <input type="number" id="p-${id}" value="${price}" min="0" step="0.5" placeholder="0"
+        oninput="calcT();updUP('${id}')"
+        style="width:100%;border:1px solid #dfe6df;border-radius:12px;padding:9px 10px;font-size:14px;font-family:inherit;outline:none;background:#fff"/>
+    </div>
+  </div>
+  <div class="uphint" id="up-${id}"></div>`;
+  w.appendChild(r);
+  if(price) updUP(id);
+  calcT();
+}
+function updUP(id){
+  const p=document.getElementById('p-'+id)?.value,q=document.getElementById('q-'+id)?.value,u=document.getElementById('u-'+id)?.value||'pcs';
+  document.getElementById('up-'+id).textContent=unitPrice(p,q,u);
+}
+function removeRow(id){
+  iRows=iRows.filter(r=>r!==id);
+  document.getElementById('r-'+id)?.remove();
+  calcT();
+}
+function calcT(){
+  let t=0;
+  iRows.forEach(id=>{
+    const p=parseFloat(document.getElementById('p-'+id)?.value||0);
+    t+=p;
+  });
+  document.getElementById('aTotal').textContent=fmt(t);
+}
+function autoFillPrice(id){
+  const name=document.getElementById('n-'+id)?.value||'';
+  if(!name.trim()) return;
+  const lp=lastPrice(name);
+  if(!lp) return;
+  const priceEl=document.getElementById('p-'+id);
+  const afEl=document.getElementById('af-'+id);
+  if(priceEl&&!priceEl.value){
+    priceEl.value=lp.price;
+    const unitEl=document.getElementById('u-'+id);
+    if(unitEl&&lp.unit) unitEl.value=lp.unit;
+    const qEl=document.getElementById('q-'+id);
+    if(qEl&&lp.qty) qEl.value=lp.qty;
+    updUP(id);
+    calcT();
+    if(afEl) afEl.textContent=`Auto-filled from ${lp.store} on ${fmtS(lp.datetime)}`;
+    setTimeout(()=>{if(afEl)afEl.textContent='';},3000);
+  }
+}
+function dupeLast(){
+  if(!purchases.length) return;
+  const l=[...purchases].sort((a,b)=>new Date(b.datetime)-new Date(a.datetime))[0];
+  selSt=l.store;
+  selPy=l.payMode||PAYS[1];
+  document.querySelectorAll('#stChips .chip').forEach(c=>c.classList.toggle('on',c.textContent===selSt));
+  document.querySelectorAll('#pyChips .chip').forEach(c=>c.classList.toggle('on',c.textContent===selPy));
+  document.getElementById('iCont').innerHTML='';
+  iRows=[];
+  l.items.forEach(it=>addRow(it.name,it.category,it.qty,it.unit||'pcs',it.price));
+  // Fix #11: reset date to now so duplicated entry doesn't inherit the old date
+  document.getElementById('aDt').value=new Date().toISOString().slice(0,16);
+  swMode('normal');
+  calcT();
+  toast('Copied last purchase');
+}
+
+async function savePurchase(){
+  let items=[];
+  if(curMd==='bulk'){
+    items=document.getElementById('bText').value.trim().split('\n').filter(l=>l.trim()).map(l=>{
+      const p=l.split(',').map(s=>s.trim());
+      return{id:uid(),name:p[0]||'',category:p[1]||'Vegetables',qty:p[2]||'1',unit:p[3]||'pcs',price:p[4]||''};
+    });
+  }else{
+    items=iRows.map(id=>({
+      id:uid(),
+      name:document.getElementById('n-'+id)?.value||'',
+      category:document.getElementById('c-'+id)?.value||'Vegetables',
+      qty:document.getElementById('q-'+id)?.value||'1',
+      unit:document.getElementById('u-'+id)?.value||'pcs',
+      price:document.getElementById('p-'+id)?.value||''
+    }));
+  }
+  items=items.filter(it=>it.name&&it.price);
+  if(!items.length){toast('Add at least one item with name and price');return;}
+  const total=items.reduce((s,it)=>s+parseFloat(it.price||0),0);
+  const dt=document.getElementById('aDt').value||new Date().toISOString();
+  const notes=document.getElementById('aNotes').value;
+
+  if(editingId){
+    purchases=purchases.map(p=>p.id===editingId?{...p,datetime:dt,store:selSt,payMode:selPy,items,total,notes}:p);
+    editingId=null;
+    document.getElementById('editBanner').style.display='none';
+    toast('Purchase updated');
+  }else{
+    purchases.push({id:uid(),datetime:dt,store:selSt,payMode:selPy,items,total,notes});
+    toast('Purchase saved');
+  }
+
+  document.getElementById('iCont').innerHTML='';
+  iRows=[];
+  addRow();
+  document.getElementById('aNotes').value='';
+  document.getElementById('bText').value='';
+  document.getElementById('aDt').value=new Date().toISOString().slice(0,16);
+  calcT();
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='Saved';
+  setTimeout(()=>{btn.textContent='Save Purchase';},1400);
+  await push();
+  _buildPriceCache();
+  renderDash();
+  renderList();
+  renderHist();
+  updateHdr();
+}
+function cancelEdit(){
+  editingId=null;
+  document.getElementById('editBanner').style.display='none';
+  document.getElementById('iCont').innerHTML='';
+  iRows=[];
+  addRow();
+  document.getElementById('aNotes').value='';
+  document.getElementById('saveBtn').textContent='Save Purchase';
+  calcT();
+}
+function startEdit(id){
+  const p=purchases.find(x=>x.id===id);
+  if(!p)return;
+  editingId=id;
+  goTab('add',document.getElementById('navAdd'));
+  selSt=p.store;
+  selPy=p.payMode||'UPI';
+  document.querySelectorAll('#stChips .chip').forEach(c=>c.classList.toggle('on',c.textContent===selSt));
+  document.querySelectorAll('#pyChips .chip').forEach(c=>c.classList.toggle('on',c.textContent===selPy));
+  document.getElementById('aDt').value=p.datetime?.slice(0,16)||'';
+  document.getElementById('aNotes').value=p.notes||'';
+  document.getElementById('iCont').innerHTML='';
+  iRows=[];
+  p.items.forEach(it=>addRow(it.name,it.category,it.qty,it.unit||'pcs',it.price));
+  swMode('normal');
+  document.getElementById('editBanner').style.display='flex';
+  document.getElementById('saveBtn').textContent='Update Purchase';
+  window.scrollTo(0,0);
+  toast('Editing purchase');
+}
+
+function rAC(id){
+  const inp=document.getElementById('n-'+id);
+  const cat=document.getElementById('c-'+id)?.value||'Vegetables';
+  const q=inp.value.toLowerCase();
+  const pool=SUGG[cat]||ALL_ITEMS;
+  const hits=q?pool.filter(x=>x.toLowerCase().includes(q)).slice(0,6):[];
+  const l=document.getElementById('ac-'+id);
+  if(!hits.length){l.style.display='none';return;}
+  l.innerHTML=hits.map(x=>{
+    const lp=lastPrice(x);
+    // Fix #2: escape lp.store — it comes from server and could contain HTML
+    const sub=lp?`Last: ${fmt(parseFloat(lp.price))} at ${safeText(lp.store)}`:'';
+    return `<div class="aci" onmousedown="document.getElementById('n-${id}').value='${safeText(x)}';document.getElementById('ac-${id}').style.display='none';autoFillPrice('${id}')">${safeText(x)}${sub?`<div class="sub">${sub}</div>`:''}</div>`;
+  }).join('');
+  l.style.display='block';
+}
+function lAC(){
+  const q=document.getElementById('lName').value.toLowerCase();
+  const hits=q?ALL_ITEMS.filter(x=>x.toLowerCase().includes(q)).slice(0,6):[];
+  const l=document.getElementById('lACl');
+  if(!hits.length){l.style.display='none';return;}
+  l.innerHTML=hits.map(x=>{
+    const lp=lastPrice(x);
+    // Fix #2: escape lp.store
+    return `<div class="aci" onmousedown="document.getElementById('lName').value='${safeText(x)}';document.getElementById('lACl').style.display='none'">${safeText(x)}${lp?`<div class="sub">Last: ${fmt(parseFloat(lp.price))} at ${safeText(lp.store)}</div>`:''}</div>`;
+  }).join('');
+  l.style.display='block';
+}
+function iAC(){
+  const q=document.getElementById('iSrch').value.toLowerCase();
+  // Fix #24: build names set from current purchases instead of rebuilding every keystroke
+  const names=[...new Set(purchases.flatMap(p=>p.items.map(it=>it.name)))];
+  const hits=q?names.filter(x=>x.toLowerCase().includes(q)).slice(0,6):[];
+  const l=document.getElementById('iACl');
+  if(!hits.length){l.style.display='none';return;}
+  // Fix #5: escape item name in innerHTML
+  l.innerHTML=hits.map(x=>`<div class="aci" onmousedown="loadIns('${safeText(x)}')">${safeText(x)}</div>`).join('');
+  l.style.display='block';
+}
+document.addEventListener('click',e=>{
+  document.querySelectorAll('.acl').forEach(l=>{
+    if(!l.parentElement?.contains(e.target)) l.style.display='none';
+  });
+});
+
+async function addToList(){
+  const name=document.getElementById('lName').value.trim();
+  if(!name)return;
+  const known=lastPrice(name);
+  shopList.push({
+    id:uid(),
+    name,
+    qty:document.getElementById('lQty').value||'1',
+    unit:document.getElementById('lUnit').value,
+    est:document.getElementById('lEst').value,
+    recur:document.getElementById('lRecur').checked,
+    checked:false,
+    category:known?.category||'Other'
+  });
+  document.getElementById('lName').value='';
+  document.getElementById('lEst').value='';
+  document.getElementById('lQty').value='1';
+  document.getElementById('lRecur').checked=false;
+  renderList();
+  await push();
+}
+async function togItem(id){
+  shopList=shopList.map(it=>it.id===id?{...it,checked:!it.checked}:it);
+  renderList();
+  await push();
+}
+async function delItem(id){
+  shopList=shopList.filter(it=>it.id!==id);
+  renderList();
+  await push();
+}
+async function clearChk(){
+  shopList=shopList.filter(it=>!it.checked);
+  renderList();
+  await push();
+}
+function conv(){
+  const chk=shopList.filter(it=>it.checked);
+  if(!chk.length)return;
+  goTab('add',document.getElementById('navAdd'));
+  document.getElementById('iCont').innerHTML='';
+  iRows=[];
+  chk.forEach(it=>addRow(it.name,it.category||'Vegetables',it.qty,it.unit||'pcs',it.est||''));
+  swMode('normal');
+  calcT();
+  // Fix #12: remove checked items from list after converting — avoids double-entry confusion
+  clearChk();
+}
+function renderList(){
+  const chkN=shopList.filter(it=>it.checked).length;
+  const estT=shopList.filter(it=>it.checked).reduce((s,it)=>s+parseFloat(it.est||0)*parseFloat(it.qty||1),0);
+  const sum=document.getElementById('lSum');
+  if(chkN>0){
+    sum.style.display='block';
+    document.getElementById('lSumT').textContent=`${chkN} checked · Est. ${fmt(estT)}`;
+  }else sum.style.display='none';
+  const un=shopList.filter(it=>!it.checked).length;
+  document.getElementById('lNavLbl').textContent=`List${un>0?` (${un})`:''}`;
+  const c=document.getElementById('lCont');
+  if(!shopList.length){c.innerHTML='<div class="empty">Your list is empty</div>';return;}
+  const rec=shopList.filter(it=>it.recur),once=shopList.filter(it=>!it.recur);
+  let html='';
+  if(rec.length){
+    html+='<div class="small-note" style="margin-bottom:6px">Recurring</div>';
+    html+=rec.map(liItem).join('');
+  }
+  if(once.length){
+    if(rec.length) html+='<div class="small-note" style="margin:12px 0 6px">One-time</div>';
+    html+=once.map(liItem).join('');
+  }
+  c.innerHTML=html;
+}
+function liItem(it){
+  const lp=lastPrice(it.name);
+  return `<div class="li">
+    <input type="checkbox" ${it.checked?'checked':''} onchange="togItem('${it.id}')"/>
+    ${tag(it.category||'Other',(it.category||'Oth').slice(0,3))}
+    <div style="flex:1">
+      <div class="n${it.checked?' done':''}">${safeText(it.name)} <span style="color:#99a4ac;font-size:11px">${safeText(it.qty)} ${safeText(it.unit)}</span></div>
+      ${lp?`<div style="font-size:10px;color:#b67116">Last: ${fmt(parseFloat(lp.price))} at ${safeText(lp.store)}</div>`:''}
+    </div>
+    ${it.est?`<span style="font-size:11px;color:#89959e">${fmt(parseFloat(it.est)*parseFloat(it.qty||1))}</span>`:''}
+    ${it.recur?'<span style="font-size:12px">♻</span>':''}
+    <button onclick="delItem('${it.id}')" style="background:none;border:none;color:#c3cace;font-size:17px;cursor:pointer;padding:2px 5px;line-height:1">×</button>
+  </div>`;
+}
+
+function renderSessions(){
+  const c=document.getElementById('sessContainer');
+  const filtered=[...purchases].filter(p=>inMonth(p.datetime,sessionCursor));
+  const countEl=document.getElementById('sessCount');
+  if(countEl) countEl.textContent=`${filtered.length} session${filtered.length!==1?'s':''}`;
+  const titleEl=document.getElementById('sessionMonthTitle');
+  const countTopEl=document.getElementById('sessionMonthCount');
+  if(titleEl) titleEl.textContent=sessionCursor.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  if(countTopEl) countTopEl.textContent=`${filtered.length} transaction${filtered.length!==1?'s':''}`;
+  if(!filtered.length){c.innerHTML='<div class="empty">No transactions in this range</div>';return;}
+  const sorted=filtered.sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));
+  const groups={};
+  sorted.forEach(p=>{
+    const dk=new Date(p.datetime).toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+    if(!groups[dk]) groups[dk]=[];
+    groups[dk].push(p);
+  });
+  c.innerHTML=Object.entries(groups).map(([date,ps])=>`
+    <div class="sdate">${safeText(date)}</div>
+    ${ps.map(p=>`<div class="hi">
+      <div class="row" style="cursor:pointer" onclick="togHist('sess-${p.id}')">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          ${tag('store',p.store)}
+          <span style="font-size:11px;color:#99a4ac">${new Date(p.datetime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div style="font-size:17px;font-weight:900">${fmt(p.total)}</div>
+      </div>
+      <div style="font-size:11px;color:#95a0a8;margin-top:4px">${p.items.length} items · ${safeText(p.payMode)}${p.notes?` · ${safeText(p.notes)}`:''}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px">
+        ${p.items.slice(0,5).map(it=>`<span style="font-size:10px;background:#f5f2eb;border-radius:999px;padding:4px 8px;color:#66747d">${safeText(it.name)} ${safeText(it.qty)}${safeText(it.unit)}</span>`).join('')}
+        ${p.items.length>5?`<span style="font-size:10px;color:#99a4ac">+${p.items.length-5} more</span>`:''}
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="sbtn" style="padding:7px 11px;font-size:11px" onclick="event.stopPropagation();togHist('sess-${p.id}')">Details</button>
+        <div style="display:flex;gap:7px">
+          <button class="ebtn" style="padding:7px 11px;font-size:11px" onclick="event.stopPropagation();startEdit('${p.id}')">Edit</button>
+          <button class="rbtn" style="padding:7px 11px;font-size:11px" onclick="event.stopPropagation();delPurch('${p.id}')">Delete</button>
+        </div>
+      </div>
+      <div class="hd" id="hd-sess-${p.id}">
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          <tr>${['Item','Cat','Qty','Unit','Price','Total'].map(h=>`<th style="text-align:${h==='Item'||h==='Cat'?'left':'right'};padding:4px 0;color:#98a4ac;font-weight:700;border-bottom:1px solid #f2eee7">${h}</th>`).join('')}</tr>
+          ${p.items.map(it=>`<tr>
+            <td style="padding:5px 0;padding-right:5px">${safeText(it.name)}</td>
+            <td>${tag(it.category,(it.category||'').slice(0,3))}</td>
+            <td style="text-align:right">${safeText(it.qty)}</td>
+            <td style="text-align:right;color:#a0abb2">${safeText(it.unit||'pcs')}</td>
+            <td style="text-align:right">${fmt(parseFloat(it.price||0))}</td>
+            <td style="text-align:right;font-weight:800">${fmt(parseFloat(it.price||0)*parseFloat(it.qty||1))}</td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </div>`).join('')}
+  `).join('');
+}
+
+function renderHSF(){
+  document.getElementById('hSF').innerHTML=['All',...STORES].map(s=>`<button class="chip-filter${s===histSF?' on':''}" onclick="setHSF('${s}')">${s}</button>`).join('');
+}
+function setHSF(s){
+  histSF=s;
+  renderHSF();
+  renderHist();
+}
+function renderHist(){
+  if(!document.getElementById('hSrch')) return;
+  const q=document.getElementById('hSrch').value.toLowerCase();
+  const list=[...purchases].filter(p=>{
+    if(histSF!=='All'&&p.store!==histSF)return false;
+    if(q&&!p.store.toLowerCase().includes(q)&&!p.items.some(it=>it.name.toLowerCase().includes(q))&&!(p.notes||'').toLowerCase().includes(q))return false;
+    return true;
+  }).sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));
+  document.getElementById('hCnt').textContent=`${list.length} result${list.length!==1?'s':''} · ${fmt(list.reduce((s,p)=>s+p.total,0))}`;
+
+  const cs=list.flatMap(p=>p.items).reduce((a,it)=>{
+    const v=parseFloat(it.price||0);
+    a[it.category]=(a[it.category]||0)+v;
+    return a;
+  },{});
+  const pd=CATS.map(cat=>({label:cat,value:cs[cat]||0,color:CCOLOR[cat]||'#888'})).filter(d=>d.value>0);
+  document.getElementById('histPie').innerHTML=pd.length?svgPie(pd):'<div class="empty" style="padding:.5rem">No data</div>';
+
+  const allI=list.flatMap(p=>p.items.map(it=>({...it,datetime:p.datetime,store:p.store})));
+  const tN=Object.entries(allI.reduce((a,it)=>{a[it.name]=(a[it.name]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([n])=>n);
+  const sAvg=(name,store)=>{
+    const e=allI.filter(it=>it.name===name&&it.store===store&&it.price&&parseFloat(it.qty)>0);
+    if(!e.length) return null;
+    return e.reduce((s,it)=>s+parseFloat(it.price)/parseFloat(it.qty),0)/e.length;
+  };
+  document.getElementById('compT').innerHTML=tN.length?`<div style="overflow-x:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">
+    <tr><th style="text-align:left;padding:4px;color:#8f9aa3;font-weight:700">Item</th>${STORES.map(s=>`<th style="text-align:right;padding:4px;color:#8f9aa3;font-weight:700">${safeText(s)}</th>`).join('')}</tr>
+    ${tN.map(name=>{
+      const prices=STORES.map(s=>sAvg(name,s));
+      const minP=Math.min(...prices.filter(p=>p!==null),Infinity);
+      return `<tr><td style="padding:6px 4px;font-weight:700;border-bottom:1px solid #f2eee7">${safeText(name)}</td>${prices.map(p=>`<td style="text-align:right;padding:6px 4px;border-bottom:1px solid #f2eee7;${p!==null&&p===minP?'background:#e9f4ea;color:#27500A;font-weight:800;border-radius:8px':'color:#88959f'}">${p!==null?'₹'+p.toFixed(1):'—'}</td>`).join('')}</tr>`;
+    }).join('')}
+  </table></div>`:'<div class="empty" style="padding:.5rem">Not enough repeat purchases for comparison yet</div>';
+
+  const stSp=list.reduce((a,p)=>{a[p.store]=(a[p.store]||0)+p.total;return a;},{});
+  const spT=Math.max(Object.values(stSp).reduce((a,b)=>a+b,0),1);
+  document.getElementById('stSp').innerHTML=Object.keys(stSp).length===0?'<div class="empty" style="padding:.5rem">No data</div>':Object.entries(stSp).sort((a,b)=>b[1]-a[1]).map(([s,sp])=>{
+    const pct=Math.round(sp/spT*100);
+    return `<div style="margin-bottom:8px"><div class="row" style="font-size:11px;margin-bottom:3px"><span>${s}</span><span style="color:#89959e">${fmt(sp)}</span></div><div class="pb"><div class="pf" style="width:${pct}%;background:#ef9f27"></div></div></div>`;
+  }).join('');
+  const pyC=list.reduce((a,p)=>{a[p.payMode]=(a[p.payMode]||0)+1;return a;},{});
+  document.getElementById('paySp').innerHTML=PAYS.map(pm=>{
+    const c=pyC[pm]||0,pct=list.length?Math.round(c/list.length*100):0;
+    return `<div style="margin-bottom:8px"><div class="row" style="font-size:11px;margin-bottom:3px"><span style="font-size:10px">${pm}</span><span style="color:#89959e">${c} · ${pct}%</span></div><div class="pb"><div class="pf" style="width:${pct}%;background:#378ADD"></div></div></div>`;
+  }).join('');
+
+}
+function togHist(id){document.getElementById('hd-'+id)?.classList.toggle('on');}
+async function delPurch(id){
+  if(!confirm('Delete this purchase?'))return;
+  purchases=purchases.filter(p=>p.id!==id);
+  deletedIds=uniq(deletedIds.concat(id));
+  _buildPriceCache();
+  renderDash();
+  renderHist();
+  renderList();
+  await push();
+  updateHdr();
+}
+function expCSV(){
+  const esc=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+  const rows=[['Date','Store','Payment','Item','Category','Qty','Unit','Price','Item Total']];
+  // Fix #26: "Total" column now shows item-level total (price × qty), not the full purchase total
+  // fmtS now includes year so exported dates are unambiguous
+  purchases.forEach(p=>p.items.forEach(it=>rows.push([
+    fmtS(p.datetime),p.store,p.payMode,it.name,it.category,
+    it.qty,it.unit||'pcs',it.price,
+    (parseFloat(it.price||0)*parseFloat(it.qty||1)).toFixed(2)
+  ])));
+  const blob=new Blob([rows.map(r=>r.map(esc).join(',')).join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='grocery_history.csv';
+  a.click();
+}
+
+function loadIns(name){
+  document.getElementById('iSrch').value=name;
+  document.getElementById('iACl').style.display='none';
+  const allI=purchases.flatMap(p=>p.items.map(it=>({...it,datetime:p.datetime,store:p.store})));
+  const items=allI.filter(it=>it.name.toLowerCase()===name.toLowerCase()).sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));
+  if(!items.length){
+    document.getElementById('iRes').innerHTML='<div class="empty" style="padding:.5rem">No data found.</div>';
+    return;
+  }
+  const avgP=items.reduce((s,it)=>s+parseFloat(it.price||0)/Math.max(parseFloat(it.qty),1),0)/items.length;
+  let best=null,bestV=Infinity;
+  STORES.forEach(s=>{
+    const e=items.filter(it=>it.store===s&&it.price&&parseFloat(it.qty)>0);
+    if(e.length){
+      const a=e.reduce((x,it)=>x+parseFloat(it.price)/parseFloat(it.qty),0)/e.length;
+      if(a<bestV){bestV=a;best=s;}
+    }
+  });
+  const last=items[0];
+  document.getElementById('iRes').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+      <div class="mc"><div class="l">Avg Price</div><div class="v" style="font-size:15px">₹${avgP.toFixed(1)}</div></div>
+      <div class="mc"><div class="l">Bought</div><div class="v" style="font-size:15px">${items.length}×</div></div>
+      <div class="mc"><div class="l">Cheapest At</div><div class="v" style="font-size:13px">${best||'—'}</div></div>
+    </div>
+    <div style="background:#f5f2eb;border-radius:16px;padding:11px 12px;margin-bottom:10px;font-size:12px">
+      <strong>Last bought:</strong> ${fmt(parseFloat(last.price||0))} for ${last.qty} ${last.unit||'pcs'} at ${last.store} on ${fmtS(last.datetime)}
+      ${unitPrice(last.price,last.qty,last.unit||'pcs')?` · <span style="color:#305f39;font-weight:700">${unitPrice(last.price,last.qty,last.unit||'pcs')}</span>`:''}
+    </div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr>${['Date','Store','Qty','Unit','Price','Per Unit'].map(h=>`<th style="text-align:${h==='Date'||h==='Store'?'left':'right'};padding:4px 0;color:#96a2ab;font-weight:700;border-bottom:1px solid #f2eee7">${h}</th>`).join('')}</tr>
+      ${items.map(it=>`<tr>
+        <td style="padding:5px 0">${fmtS(it.datetime)}</td>
+        <td style="font-size:11px">${tag('store',it.store)}</td>
+        <td style="text-align:right">${it.qty}</td>
+        <td style="text-align:right;color:#a2adb4">${it.unit||'pcs'}</td>
+        <td style="text-align:right;font-weight:800">${fmt(parseFloat(it.price||0))}</td>
+        <td style="text-align:right;color:#305f39;font-weight:700">${unitPrice(it.price,it.qty,it.unit||'pcs')||'—'}</td>
+      </tr>`).join('')}
+    </table>`;
+}
+function renderIns(){
+  document.getElementById('sSC').textContent=SCODE||'default';
+  document.getElementById('sURL').textContent=GAS_URL||'Not connected yet';
+  // Fix #32: only render calendar if panel is actually open — avoids wasted DOM work
+  if(document.getElementById('calendarPanel')?.classList.contains('on')){
+    renderCalendarView();
+  }
+}
+
+function shiftCalendarMonth(delta){
+  calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+delta,1);
+  if(selectedCalendarDate&&(selectedCalendarDate.getFullYear()!==calCursor.getFullYear()||selectedCalendarDate.getMonth()!==calCursor.getMonth())){
+    selectedCalendarDate=null;
+  }
+  renderCalendarView();
+}
+
+function sameDay(a,b){
+  return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+}
+
+function getTransactionsForDate(date){
+  return [...purchases]
+    .filter(p=>sameDay(new Date(p.datetime),date))
+    .sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));
+}
+
+function selectCalendarDate(year,month,day){
+  selectedCalendarDate=new Date(year,month,day);
+  renderCalendarView();
+}
+
+function clearCalendarSelection(){
+  selectedCalendarDate=null;
+  renderCalendarView();
+}
+
+function renderCalendarDayTransactions(){
+  const emptyEl=document.getElementById('calendarDayEmpty');
+  const contentEl=document.getElementById('calendarDayContent');
+  const titleEl=document.getElementById('calendarDayTitle');
+  const countEl=document.getElementById('calendarDayCount');
+  const listEl=document.getElementById('calendarDayTransactions');
+  if(!emptyEl||!contentEl||!titleEl||!countEl||!listEl) return;
+
+  if(!selectedCalendarDate){
+    emptyEl.style.display='block';
+    contentEl.style.display='none';
+    return;
+  }
+
+  const dayPurchases=getTransactionsForDate(selectedCalendarDate);
+  const total=dayPurchases.reduce((sum,p)=>sum+p.total,0);
+  titleEl.textContent=selectedCalendarDate.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  countEl.textContent=`${dayPurchases.length} transaction${dayPurchases.length!==1?'s':''} · ${fmt(total)}`;
+  emptyEl.style.display='none';
+  contentEl.style.display='block';
+
+  if(!dayPurchases.length){
+    listEl.innerHTML='<div class="calendar-empty" style="background:#fff;border-radius:18px;box-shadow:var(--shadow)">No transactions recorded for this date.</div>';
+    return;
+  }
+
+  listEl.innerHTML=dayPurchases.map(p=>`
+    <div class="hi" style="margin-bottom:0">
+      <div class="row">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          ${tag('store',p.store)}
+          ${tag('pay',p.payMode||'NA')}
+          <span style="font-size:11px;color:#99a4ac">${new Date(p.datetime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div style="font-size:17px;font-weight:900">${fmt(p.total)}</div>
+      </div>
+      <div style="font-size:11px;color:#95a0a8;margin-top:4px">${p.items.length} items${p.notes?` · ${safeText(p.notes)}`:''}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+        ${p.items.map(it=>`<span style="font-size:10px;background:#f5f2eb;border-radius:999px;padding:4px 8px;color:#66747d">${safeText(it.name)} ${safeText(it.qty)}${safeText(it.unit||'pcs')}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCalendarView(){
+  const title=document.getElementById('calTitle');
+  const count=document.getElementById('calCount');
+  const grid=document.getElementById('calendarGrid');
+  if(!title||!count||!grid) return;
+  const year=calCursor.getFullYear();
+  const month=calCursor.getMonth();
+  const first=new Date(year,month,1);
+  const startDay=first.getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const monthly=purchases.filter(p=>{
+    const d=new Date(p.datetime);
+    return d.getFullYear()===year&&d.getMonth()===month;
+  });
+  const byDay={};
+  monthly.forEach(p=>{
+    const day=new Date(p.datetime).getDate();
+    byDay[day]=(byDay[day]||0)+p.total;
+  });
+  title.textContent=first.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  count.textContent=`${monthly.length} transactions`;
+  const amounts=Object.values(byDay);
+  const max=Math.max(...amounts,0);
+  let html='';
+  for(let i=0;i<startDay;i++) html+='<div class="calendar-cell empty"></div>';
+  for(let day=1;day<=daysInMonth;day++){
+    const amt=byDay[day]||0;
+    let cls='';
+    if(amt>0&&max>0){
+      const ratio=amt/max;
+      cls=ratio>.85?' top':ratio>.55?' high':ratio>.25?' mid':'';
+    }
+    const selected=selectedCalendarDate&&selectedCalendarDate.getFullYear()===year&&selectedCalendarDate.getMonth()===month&&selectedCalendarDate.getDate()===day;
+    html+=`<div class="calendar-cell${selected?' sel':''}" onclick="selectCalendarDate(${year},${month},${day})">
+      <div class="calendar-day">${day}</div>
+      ${amt?`<div class="calendar-amt${cls}">${fmt(amt)}</div>`:''}
+    </div>`;
+  }
+  const totalCells=startDay+daysInMonth;
+  const tail=(7-(totalCells%7))%7;
+  for(let i=0;i<tail;i++) html+='<div class="calendar-cell empty"></div>';
+  grid.innerHTML=html;
+  renderCalendarDayTransactions();
+}
+
+function openSett(){document.getElementById('settMod').classList.add('on');}
+function closeSett(){document.getElementById('settMod').classList.remove('on');}
+function resetApp(){
+  if(!confirm('Clear local session? Your Google Sheet data stays safe.'))return;
+  ['gt_url','gt_code','gt_dkey','gt_p','gt_l','gt_b','gt_cb','gt_del'].forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+// tag() now handles store/pay/category cases directly — monkey-patch removed
+
+(function(){
+  const url=localStorage.getItem('gt_url'),code=localStorage.getItem('gt_code'),dkey=localStorage.getItem('gt_dkey');
+  if(url&&code&&dkey){
+    GAS_URL=url;
+    SCODE=code;
+    DKEY=dkey;
+    // Fix #27: JSON.parse can throw on corrupted localStorage — wrap all reads
+    try{purchases=JSON.parse(localStorage.getItem('gt_p')||'[]');}catch{purchases=[];}
+    try{shopList=JSON.parse(localStorage.getItem('gt_l')||'[]');}catch{shopList=[];}
+    budget=parseFloat(localStorage.getItem('gt_b')||'0');
+    try{catBudgets=JSON.parse(localStorage.getItem('gt_cb')||'{}');}catch{catBudgets={};}
+    try{deletedIds=uniq(JSON.parse(localStorage.getItem('gt_del')||'[]'));}catch{deletedIds=[];}
+    _buildPriceCache();
+    document.getElementById('setup').style.display='none';
+    document.getElementById('wrap').style.display='block';
+    initApp();
+    renderDash();
+    renderList();
+    renderHSF();
+    renderHist();
+    renderIns();
+    pull();
+    startAutoSync();
+  }
+})();
+</script>
+<script>
+// Single service worker registration point — index.html also registers but with same scope,
+// browser deduplicates; keeping here ensures it works when accessing app file directly
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js", { scope: "./" })
+    .then(() => console.log("SW registered"))
+    .catch((err) => console.warn("SW registration failed", err));
+}
+</script>
+<script>
+let deferredPrompt;
+const installBtn=document.getElementById("installBtn");
+const isStandalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+
+if(installBtn&&isStandalone){
+  installBtn.style.display="none";
+}
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if(installBtn&&!isStandalone) installBtn.style.display = "block";
+});
+
+if(installBtn){
+  installBtn.addEventListener("click", () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        installBtn.style.display="none";
+      });
+    }else if(isStandalone){
+      toast("App already installed");
+    }else{
+      toast("Install prompt is not available on this device yet");
+    }
+  });
+}
+
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null;
+  if(installBtn) installBtn.style.display = "none";
+  toast("Grocify installed");
+});
+
+window.addEventListener("online", () => {
+  setDot("on");
+  toast("Back online");
+});
+
+window.addEventListener("offline", () => {
+  setDot("off");
+  toast("You are offline");
+});
+
+setDot(navigator.onLine===false?"off":"on");
+</script>
+</body>
+</html>

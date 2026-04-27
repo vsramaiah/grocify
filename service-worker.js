@@ -4,7 +4,7 @@ const RUNTIME_CACHE = `${VERSION}-runtime`;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./grocify-gsheetv3.0-Codex.html",
+  "./grocify-app.html",
   "./manifest.json",
   "./offline.html",
   "./icon.svg",
@@ -17,7 +17,7 @@ const APP_SHELL = [
 const NETWORK_FIRST_PATTERNS = [
   /\/$/,
   /index\.html$/,
-  /grocify-gsheetv3\.0-Codex\.html$/,
+  /grocify-app\.html$/,   // Fix #7: was grocify-gsheetv3\.0-Codex\.html — updated to match current filename
   /manifest\.json$/,
   /icon(-maskable)?\.svg$/,
   /icon-(192|512)\.png$/

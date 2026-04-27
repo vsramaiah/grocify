@@ -2,12 +2,12 @@ $ErrorActionPreference = "Stop"
 
 $port = 8080
 
-if (Test-Path (Join-Path $PSScriptRoot "grocify-gsheetv3.0-Codex.html") -PathType Leaf) {
+if (Test-Path (Join-Path $PSScriptRoot "grocify-app.html") -PathType Leaf) {
   $root = $PSScriptRoot
-} elseif (Test-Path (Join-Path $PSScriptRoot "Grocify\\grocify-gsheetv3.0-Codex.html") -PathType Leaf) {
+} elseif (Test-Path (Join-Path $PSScriptRoot "Grocify\\grocify-app.html") -PathType Leaf) {
   $root = Join-Path $PSScriptRoot "Grocify"
 } else {
-  throw "Could not find grocify-gsheetv3.0-Codex.html relative to $PSScriptRoot"
+  throw "Could not find grocify-app.html relative to $PSScriptRoot"
 }
 
 function Get-ContentType {
@@ -68,9 +68,9 @@ $localIp = Get-LocalIPv4Address
 
 Write-Host "Grocify server running."
 Write-Host "Serving from: $root"
-Write-Host "This PC: http://localhost:$port/grocify-gsheetv3.0-Codex.html"
+Write-Host "This PC: http://localhost:$port/grocify-app.html"
 if ($localIp) {
-  Write-Host "Mobile: http://$localIp`:$port/grocify-gsheetv3.0-Codex.html"
+  Write-Host "Mobile: http://$localIp`:$port/grocify-app.html"
   Write-Host "Make sure phone and PC are on the same Wi-Fi."
 }
 Write-Host "Press Ctrl+C to stop."
@@ -104,7 +104,7 @@ try {
 
       $requestPath = [System.Uri]::UnescapeDataString($parts[1].TrimStart("/"))
       if ([string]::IsNullOrWhiteSpace($requestPath)) {
-        $requestPath = "grocify-gsheetv3.0-Codex.html"
+        $requestPath = "grocify-app.html"
       }
 
       $requestPath = $requestPath.Split("?")[0]

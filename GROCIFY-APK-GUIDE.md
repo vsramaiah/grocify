@@ -32,7 +32,7 @@ Download the fixed files provided alongside this guide and replace:
 ### 2c. Upload your files
 1. Click **uploading an existing file** (link on the empty repo page)
 2. Drag and drop ALL files from your `Grocify/` folder:
-   - `grocify-gsheetv3.0-Codex.html`
+   - `grocify-app.html`
    - `index.html`
    - `manifest.json`
    - `service-worker.js`

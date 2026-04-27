@@ -4,7 +4,7 @@ This project contains the Grocify grocery tracker PWA.
 
 ## Files
 
-- App: [Grocify/grocify-gsheetv3.0-Codex.html](E:\AI_Grocery_Tracker\Grocify\grocify-gsheetv3.0-Codex.html)
+- App: [Grocify/grocify-app.html](E:\AI_Grocery_Tracker\Grocify\grocify-app.html)
 - Local server: [serve-grocify.ps1](E:\AI_Grocery_Tracker\Grocify\serve-grocify.ps1)
 - PWA manifest: [Grocify/manifest.json](E:\AI_Grocery_Tracker\Grocify\manifest.json)
 - Service worker: [Grocify/service-worker.js](E:\AI_Grocery_Tracker\Grocify\service-worker.js)
@@ -23,7 +23,7 @@ powershell -ExecutionPolicy Bypass -File .\serve-grocify.ps1
 
 Then open this URL in your browser:
 
-[http://localhost:8080/grocify-gsheetv3.0-Codex.html](http://localhost:8080/grocify-gsheetv3.0-Codex.html)
+[http://localhost:8080/grocify-app.html](http://localhost:8080/grocify-app.html)
 
 Keep the PowerShell window open while using the app.
 
@@ -56,7 +56,7 @@ powershell -ExecutionPolicy Bypass -File .\serve-grocify.ps1
 The script prints a `Mobile:` URL like:
 
 ```text
-http://192.168.x.x:8080/grocify-gsheetv3.0-Codex.html
+http://192.168.x.x:8080/grocify-app.html
 ```
 
 Requirements:
@@ -74,7 +74,7 @@ When code changes are made:
 
 1. Keep the PowerShell server running.
 2. Open the browser version again:
-   [http://localhost:8080/grocify-gsheetv3.0-Codex.html](http://localhost:8080/grocify-gsheetv3.0-Codex.html)
+   [http://localhost:8080/grocify-app.html](http://localhost:8080/grocify-app.html)
 3. Refresh the browser page.
 4. Close the installed app completely.
 5. Open the installed app again.
@@ -86,3 +86,18 @@ If the installed app still shows the old version:
 3. If needed, uninstall and install the app again.
 
 This is needed because PWAs can cache files through the service worker.
+
+## Current More Tab Calendar Flow
+
+In the `More` tab:
+
+1. Tap `Calendar`.
+2. The month calendar opens.
+3. Tap any date.
+4. Only that day’s transactions appear below the calendar.
+
+## Next Improvements
+
+- Export real PNG app icons for broader device compatibility.
+- Host the app online for easier mobile install.
+- Improve the More tab calendar card visuals.
